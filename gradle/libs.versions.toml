@@ -12,7 +12,7 @@ okhttp = "4.12.0"
 retrofit = "2.11.0"
 kotlinxSerilization = "1.8.0"
 secretsGradle = "2.0.1"
-hilt = "2.54"
+hilt = "2.55"
 ksp = "2.1.0-1.0.29"
 androidxHiltNavigationCompose = "1.2.0"
 
