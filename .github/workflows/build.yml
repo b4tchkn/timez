@@ -30,6 +30,20 @@ jobs:
           java-version: 17
           distribution: adopt
 
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches/build-cache-*
+            ~/.gradle/caches/[0-9]*.*
+            .gradle
+          key: ${{ runner.os }}-gradle-build-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-gradle-build-${{ github.workflow }}-
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
 
