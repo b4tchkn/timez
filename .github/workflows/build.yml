@@ -21,6 +21,9 @@ jobs:
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
 
+      - name: Copy Secrets
+        run: cp secrets.default.properties secrets.properties
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
