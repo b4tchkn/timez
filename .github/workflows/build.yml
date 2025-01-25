@@ -30,12 +30,12 @@ jobs:
           java-version: 17
           distribution: adopt
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: ~/.gradle/wrapper
           key: gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches/build-cache-*
