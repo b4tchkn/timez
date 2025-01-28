@@ -11,4 +11,16 @@ data class Article(
     val urlToImage: String?,
     val publishedAt: String?,
     val content: String?,
-)
+) {
+    companion object {
+        val Default = Article(
+            author = null,
+            title = null,
+            description = null,
+            url = null,
+            urlToImage = null,
+            publishedAt = null,
+            content = null,
+        )
+    }
+}
