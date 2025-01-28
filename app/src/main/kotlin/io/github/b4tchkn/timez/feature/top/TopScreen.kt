@@ -1,4 +1,4 @@
-package io.github.b4tchkn.timez.ui.top
+package io.github.b4tchkn.timez.feature.top
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
