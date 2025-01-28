@@ -1,6 +1,5 @@
 package io.github.b4tchkn.timez.feature.top
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
@@ -15,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.b4tchkn.timez.ui.component.LoadingBox
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,15 +34,13 @@ fun TopScreen() {
             )
         },
     ) { padding ->
-        Box(
+
+        LoadingBox(
             modifier = Modifier.padding(padding),
+            loading = state.loading,
         ) {
-            if (state.loading) {
-                Text("Loading...")
-            } else {
-                when (val content = state.content) {
-                    is TopUiModel.Content.Default -> Text(content.articles.toString())
-                }
+            when (val content = state.content) {
+                is TopUiModel.Content.Default -> Text(content.articles.toString())
             }
         }
     }

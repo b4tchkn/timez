@@ -6,8 +6,8 @@ import javax.inject.Inject
 
 class GetTopHeadlinesUseCase @Inject constructor(
     private val newsApiService: NewsApiService,
-) : UseCase<Unit, MutableList<Article>> {
-    override suspend fun invoke(param: Unit): Result<MutableList<Article>> = runCatching {
+) : UseCase<Unit, List<Article>> {
+    override suspend fun invoke(param: Unit): Result<List<Article>> = runCatching {
         newsApiService.getTopHeadlines(country = "us").articles
     }
 }

@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class News(
-    val articles: MutableList<Article>,
+    val articles: List<Article>,
 )
