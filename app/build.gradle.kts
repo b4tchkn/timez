@@ -58,6 +58,9 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
 
+    implementation(libs.destinations.core)
+    ksp(libs.destinations.ksp)
+
     implementation(libs.timber)
 
     implementation(libs.molecule.runtime)

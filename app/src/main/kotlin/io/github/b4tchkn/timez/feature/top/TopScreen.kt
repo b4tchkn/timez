@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
 import io.github.b4tchkn.timez.feature.top.component.ArticleCard
 import io.github.b4tchkn.timez.model.Article
@@ -44,8 +47,12 @@ import io.github.b4tchkn.timez.ui.component.MainSurface
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
+@RootNavGraph(start = true)
+@Destination
 @Composable
-fun TopScreen() {
+fun TopScreen(
+    navigator: DestinationsNavigator,
+) {
     val viewModel = hiltViewModel<TopViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 

@@ -22,5 +22,5 @@ ktlint_standard_property-naming=disabled
 [*.yml]
 indent_size=2
 
-[{**/build/**/*.kt}]
+[**/build/**/*.kt]
 ktlint=disabled
