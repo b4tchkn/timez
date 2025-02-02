@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Article(
+    val source: Source?,
     val author: String?,
     val title: String?,
     val description: String?,
@@ -14,6 +15,7 @@ data class Article(
 ) {
     companion object {
         val Default = Article(
+            source = null,
             author = null,
             title = null,
             description = null,
@@ -24,3 +26,9 @@ data class Article(
         )
     }
 }
+
+@Serializable
+data class Source(
+    val id: String?,
+    val name: String?,
+)

@@ -9,6 +9,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.b4tchkn.timez.domain.newsapi.GetTopHeadlinesUseCase
+import io.github.b4tchkn.timez.feature.top.TopUiModel.Content.Default
+import io.github.b4tchkn.timez.feature.top.TopUiModel.Content.Empty
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +32,10 @@ class TopViewModel @Inject constructor(
             getTopHeadlinesUseCase
                 .invoke(Unit)
                 .onSuccess { articles = it }
-                .onFailure { error = it }
+                .onFailure {
+                    error = it
+                    error?.printStackTrace()
+                }
         }
 
         LaunchedEffect(Unit) { refresh() }
@@ -46,7 +51,7 @@ class TopViewModel @Inject constructor(
         return TopUiModel(
             loading = loading,
             error = error,
-            content = TopUiModel.Content.Default(articles = articles),
+            content = if (articles.isEmpty()) Empty else Default(articles = articles),
         )
     }
 }
@@ -60,6 +65,8 @@ data class TopUiModel(
         data class Default(
             val articles: List<Article>,
         ) : Content
+
+        data object Empty : Content
     }
 }
 
