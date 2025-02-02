@@ -1,5 +1,7 @@
 package io.github.b4tchkn.timez.feature.top
 
+import MultiLocalePreviews
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -30,8 +33,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +47,8 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
 import io.github.b4tchkn.timez.feature.destinations.NewsDetailScreenDestination
+import io.github.b4tchkn.timez.feature.top.TopScreenPreviewParameterProvider.Param
+import io.github.b4tchkn.timez.feature.top.TopUiModel.Content
 import io.github.b4tchkn.timez.feature.top.component.ArticleCard
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.component.Gap
@@ -75,18 +83,46 @@ fun TopScreen(
             modifier = Modifier.padding(padding),
             loading = state.loading,
         ) {
-            when (val content = state.content) {
-                is TopUiModel.Content.Default -> TopScreenDefaultContent(
-                    articles = content.articles,
-                    onArticleClick = { article ->
-                        navigator.navigate(
-                            NewsDetailScreenDestination(article),
-                        )
-                    },
-                )
+            TopScreenContent(
+                content = state.content,
+                onArticleClick = { article ->
+                    navigator.navigate(
+                        NewsDetailScreenDestination(article),
+                    )
+                },
+            )
+        }
+    }
+}
 
-                TopUiModel.Content.Empty -> TODO()
-            }
+@Composable
+private fun TopScreenContent(
+    content: Content,
+    onArticleClick: (Article) -> Unit,
+) {
+    when (content) {
+        is Content.Default -> TopScreenDefaultContent(
+            articles = content.articles,
+            onArticleClick = onArticleClick,
+        )
+
+        Content.Empty -> Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                modifier = Modifier.size(80.dp),
+                painter = painterResource(R.drawable.baseline_newspaper_24),
+                contentDescription = null,
+            )
+            Gap(16.dp)
+            Text(
+                stringResource(R.string.top_empty_news),
+                style = TimezTheme.typography.h20.copy(
+                    textAlign = TextAlign.Center,
+                ),
+            )
         }
     }
 }
@@ -119,7 +155,7 @@ private fun TopScreenDefaultContent(
             item { Gap(16.dp) }
             item {
                 Text(
-                    "Recent News",
+                    stringResource(R.string.top_recent_news),
                     style = TimezTheme.typography.h20.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -152,7 +188,7 @@ private fun TopArticle(
 ) {
     Column {
         Text(
-            "Breaking News",
+            stringResource(R.string.top_breaking_news),
             style = TimezTheme.typography.h24.copy(
                 fontWeight = FontWeight.Bold,
             ),
@@ -216,18 +252,35 @@ private fun TopArticle(
     }
 }
 
-@Preview
+@MultiLocalePreviews
 @Composable
-private fun PreviewTopScreenDefaultContent() {
+private fun PreviewTopScreenDefaultContent(
+    @PreviewParameter(TopScreenPreviewParameterProvider::class) param: Param,
+) {
     MainSurface {
-        TopScreenDefaultContent(
-            articles = List(10) {
-                Article.Default.copy(
-                    title = "Title $it",
-                    publishedAt = "2021-01-01",
-                )
-            },
+        TopScreenContent(
+            content = param.content,
             onArticleClick = {},
         )
     }
+}
+
+private class TopScreenPreviewParameterProvider : PreviewParameterProvider<Param> {
+    override val values = sequenceOf(
+        Param(
+            Content.Default(
+                articles = List(10) {
+                    Article.Default.copy(
+                        title = "Title $it",
+                        publishedAt = "2021-01-01",
+                    )
+                },
+            ),
+        ),
+        Param(Content.Empty),
+    )
+
+    data class Param(
+        val content: Content,
+    )
 }
