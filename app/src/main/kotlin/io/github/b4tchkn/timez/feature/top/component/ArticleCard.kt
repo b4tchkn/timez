@@ -1,5 +1,6 @@
 package io.github.b4tchkn.timez.feature.top.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,10 +25,12 @@ import io.github.b4tchkn.timez.ui.theme.TimezTheme
 @Composable
 fun ArticleCard(
     article: Article,
+    onClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick() },
     ) {
         Row {
             AsyncImage(
@@ -72,6 +75,7 @@ private fun PreviewArticleCard() {
                 title = "Elon Musk's X reprimanded after disinformation safety feature scrapped",
                 publishedAt = "2022-10-10T00:00:00Z",
             ),
+            onClick = {},
         )
     }
 }

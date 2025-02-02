@@ -4,14 +4,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.github.b4tchkn.timez.feature.top.TopScreen
+import androidx.navigation.compose.rememberNavController
+import com.ramcosta.composedestinations.DestinationsNavHost
+import io.github.b4tchkn.timez.feature.NavGraphs
+import io.github.b4tchkn.timez.feature.destinations.TopScreenDestination
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 
 @Composable
 fun TimezApp() {
+    val navController = rememberNavController()
+
     TimezTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            TopScreen()
+            DestinationsNavHost(
+                navController = navController,
+                navGraph = NavGraphs.root,
+                startRoute = TopScreenDestination,
+            )
         }
     }
 }

@@ -18,6 +18,7 @@ androidxHiltNavigationCompose = "1.2.0"
 molecule = "2.0.0"
 timber = "5.0.1"
 coil = "3.0.4"
+destinations = "1.11.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,8 @@ molecule-runtime = { group = "app.cash.molecule", name = "molecule-runtime", ver
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "destinations" }
+destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "destinations" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

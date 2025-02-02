@@ -1,5 +1,6 @@
 package io.github.b4tchkn.timez.feature.top
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
+import io.github.b4tchkn.timez.feature.destinations.NewsDetailScreenDestination
 import io.github.b4tchkn.timez.feature.top.component.ArticleCard
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.component.Gap
@@ -44,8 +49,12 @@ import io.github.b4tchkn.timez.ui.component.MainSurface
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
+@RootNavGraph(start = true)
+@Destination
 @Composable
-fun TopScreen() {
+fun TopScreen(
+    navigator: DestinationsNavigator,
+) {
     val viewModel = hiltViewModel<TopViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -67,14 +76,26 @@ fun TopScreen() {
             loading = state.loading,
         ) {
             when (val content = state.content) {
-                is TopUiModel.Content.Default -> TopScreenDefaultContent(content.articles)
+                is TopUiModel.Content.Default -> TopScreenDefaultContent(
+                    articles = content.articles,
+                    onArticleClick = { article ->
+                        navigator.navigate(
+                            NewsDetailScreenDestination(article),
+                        )
+                    },
+                )
+
+                TopUiModel.Content.Empty -> TODO()
             }
         }
     }
 }
 
 @Composable
-private fun TopScreenDefaultContent(articles: List<Article>) {
+private fun TopScreenDefaultContent(
+    articles: List<Article>,
+    onArticleClick: (Article) -> Unit,
+) {
     LazyColumn(
         contentPadding = PaddingValues(
             horizontal = 16.dp,
@@ -84,7 +105,12 @@ private fun TopScreenDefaultContent(articles: List<Article>) {
         val breakingNews = articles.firstOrNull()
 
         if (breakingNews != null) {
-            item { TopArticle(breakingNews) }
+            item {
+                TopArticle(
+                    article = breakingNews,
+                    onClick = { onArticleClick(breakingNews) },
+                )
+            }
         }
 
         val recentNews = articles.drop(1)
@@ -108,7 +134,10 @@ private fun TopScreenDefaultContent(articles: List<Article>) {
                     userScrollEnabled = false,
                 ) {
                     items(articles.drop(1)) {
-                        ArticleCard(article = it)
+                        ArticleCard(
+                            article = it,
+                            onClick = { onArticleClick(it) },
+                        )
                     }
                 }
             }
@@ -117,7 +146,10 @@ private fun TopScreenDefaultContent(articles: List<Article>) {
 }
 
 @Composable
-private fun TopArticle(article: Article) {
+private fun TopArticle(
+    article: Article,
+    onClick: () -> Unit,
+) {
     Column {
         Text(
             "Breaking News",
@@ -129,7 +161,8 @@ private fun TopArticle(article: Article) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(280.dp),
+                .height(280.dp)
+                .clickable { onClick() },
         ) {
             Box(
                 contentAlignment = Alignment.BottomStart,
@@ -194,6 +227,7 @@ private fun PreviewTopScreenDefaultContent() {
                     publishedAt = "2021-01-01",
                 )
             },
+            onArticleClick = {},
         )
     }
 }
