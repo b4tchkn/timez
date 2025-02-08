@@ -4,4 +4,8 @@
     <string name="top_breaking_news">Breaking News</string>
     <string name="top_recent_news">Recent News</string>
     <string name="top_empty_news">We\'re preparing the latest news.\nWe\'ll deliver carefully selected news to you shortly.</string>
+
+    <string name="news_detail_read_more">Read more</string>
+
+    <string name="description_back">Back</string>
 </resources>
