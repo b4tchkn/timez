@@ -1,11 +1,39 @@
 package io.github.b4tchkn.timez.ui.theme
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+@Immutable
+object TimezColorTokens {
+    val white = Color(0xFFFFFFFF)
+    val black = Color(0xFF000000)
+    val gray = Color(0xFF9E9E9E)
+}
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+@Immutable
+data class TimezColor(
+    val white: Color,
+    val black: Color,
+    val gray: Color,
+)
+
+fun lightTimezColorScheme(): TimezColor = TimezColor(
+    white = TimezColorTokens.white,
+    black = TimezColorTokens.black,
+    gray = TimezColorTokens.gray,
+)
+
+fun darkTimezColorScheme(): TimezColor = TimezColor(
+    white = TimezColorTokens.white,
+    black = TimezColorTokens.black,
+    gray = TimezColorTokens.gray,
+)
+
+val LocalTimezColor = staticCompositionLocalOf {
+    TimezColor(
+        white = Color.Unspecified,
+        black = Color.Unspecified,
+        gray = Color.Unspecified,
+    )
+}

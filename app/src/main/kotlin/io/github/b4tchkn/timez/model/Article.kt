@@ -31,4 +31,11 @@ data class Article(
 data class Source(
     val id: String?,
     val name: String?,
-)
+) {
+    companion object {
+        val Default = Source(
+            id = null,
+            name = null,
+        )
+    }
+}
