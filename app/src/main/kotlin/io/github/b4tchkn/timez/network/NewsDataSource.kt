@@ -1,4 +1,4 @@
-package io.github.b4tchkn.timez.data
+package io.github.b4tchkn.timez.network
 
 import dagger.Module
 import dagger.Provides
@@ -10,7 +10,7 @@ import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface NewsApiService {
+interface NewsDataSource {
     @GET("top-headlines")
     suspend fun getTopHeadlines(
         @Query("country") country: String,
@@ -19,7 +19,7 @@ interface NewsApiService {
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NewsApiServiceModule {
+object NewsDataSourceModule {
     @Provides
-    fun provide(retrofit: Retrofit): NewsApiService = retrofit.create()
+    fun provide(retrofit: Retrofit): NewsDataSource = retrofit.create()
 }

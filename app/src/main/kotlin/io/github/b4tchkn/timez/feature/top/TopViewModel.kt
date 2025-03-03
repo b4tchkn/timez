@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.b4tchkn.timez.domain.newsapi.GetTopHeadlinesUseCase
+import io.github.b4tchkn.timez.data.repository.NewsRepository
 import io.github.b4tchkn.timez.feature.top.TopUiModel.Content.Default
 import io.github.b4tchkn.timez.feature.top.TopUiModel.Content.Empty
 import io.github.b4tchkn.timez.model.Article
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TopViewModel @Inject constructor(
-    private val getTopHeadlinesUseCase: GetTopHeadlinesUseCase,
+    private val newsRepository: NewsRepository,
 ) : MoleculeViewModel<TopUiEvent, TopUiModel>() {
     @Composable
     override fun state(events: Flow<TopUiEvent>): TopUiModel {
@@ -29,8 +29,7 @@ class TopViewModel @Inject constructor(
         val scope = rememberCoroutineScope()
 
         fun refresh() = scope.launch(loading = { loading = it }) {
-            getTopHeadlinesUseCase
-                .invoke(Unit)
+            runCatching { newsRepository.topHeadlines() }
                 .onSuccess { articles = it }
                 .onFailure {
                     error = it

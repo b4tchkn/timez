@@ -1,4 +1,4 @@
-package io.github.b4tchkn.timez.data.network
+package io.github.b4tchkn.timez.network
 
 import dagger.Module
 import dagger.Provides
