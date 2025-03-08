@@ -21,7 +21,10 @@ class TopViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
 ) : MoleculeViewModel<TopUiEvent, TopUiModel>() {
     @Composable
-    override fun state(events: Flow<TopUiEvent>): TopUiModel {
+    override fun state(events: Flow<TopUiEvent>): TopUiModel = presenter(events)
+
+    @Composable
+    fun presenter(events: Flow<TopUiEvent>): TopUiModel {
         var loading by remember { mutableStateOf(false) }
         var error by remember { mutableStateOf<Throwable?>(null) }
         var articles by remember { mutableStateOf<List<Article>>(emptyList()) }
@@ -31,10 +34,7 @@ class TopViewModel @Inject constructor(
         fun refresh() = scope.launch(loading = { loading = it }) {
             runCatching { newsRepository.topHeadlines() }
                 .onSuccess { articles = it }
-                .onFailure {
-                    error = it
-                    error?.printStackTrace()
-                }
+                .onFailure { error = it }
         }
 
         LaunchedEffect(Unit) { refresh() }
