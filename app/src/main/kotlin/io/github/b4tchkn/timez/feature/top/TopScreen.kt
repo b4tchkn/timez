@@ -48,6 +48,9 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
+import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
+import io.github.b4tchkn.timez.core.RelativeTime
+import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
 import io.github.b4tchkn.timez.feature.destinations.NewsDetailScreenDestination
 import io.github.b4tchkn.timez.feature.top.TopScreenPreviewParameterProvider.Param
 import io.github.b4tchkn.timez.feature.top.TopUiModel.Content
@@ -57,6 +60,9 @@ import io.github.b4tchkn.timez.ui.component.Gap
 import io.github.b4tchkn.timez.ui.component.LoadingBox
 import io.github.b4tchkn.timez.ui.component.MainSurface
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
+import kotlinx.datetime.LocalDateTime
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
@@ -88,8 +94,10 @@ fun TopScreen(
             TopScreenContent(
                 content = state.content,
                 onArticleClick = { article ->
+                    val articleId = Random.nextInt(0, 100000).toString()
+                    navArgsMap[articleId] = article
                     navigator.navigate(
-                        NewsDetailScreenDestination(article),
+                        NewsDetailScreenDestination(articleId),
                     )
                 },
             )
@@ -240,9 +248,13 @@ private fun TopArticle(
                         )
                     }
                     article.publishedAt?.let {
+                        val relativeText = when (val relativeTime = it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)) {
+                            is RelativeTime.Days -> "${relativeTime.days}${stringResource(R.string.days_ago)}"
+                            is RelativeTime.Hours -> "${relativeTime.hours}${stringResource(R.string.hours_ago)}"
+                        }
                         Gap(4.dp)
                         Text(
-                            it,
+                            text = relativeText,
                             style = TimezTheme.typography.h14.copy(
                                 color = Color.White,
                             ),
@@ -275,7 +287,7 @@ private class TopScreenPreviewParameterProvider : PreviewParameterProvider<Param
                 articles = List(10) {
                     Article.Default.copy(
                         title = "Title $it",
-                        publishedAt = "2021-01-01",
+                        publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
                     )
                 },
             ),

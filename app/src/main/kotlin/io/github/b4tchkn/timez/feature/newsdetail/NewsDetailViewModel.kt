@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.b4tchkn.timez.feature.navArgs
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Default
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Empty
+import io.github.b4tchkn.timez.feature.top.navArgsMap
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
 import kotlinx.coroutines.flow.Flow
@@ -31,11 +32,12 @@ class NewsDetailViewModel @Inject constructor(
 
         fun refresh() = scope.launch(loading = { loading = it }) {
             runCatching {
-                savedStateHandle.navArgs<NewsDetailScreenNavArgs>().article
+                savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
             }.onSuccess {
-                article = it
+                article = navArgsMap[it] as Article?
             }.onFailure {
                 error = it
+                navArgsMap.clear()
                 error?.printStackTrace()
             }
         }
@@ -68,4 +70,6 @@ data class NewsDetailUiModel(
 
 sealed interface NewsDetailUiEvent {
     data object Refresh : NewsDetailUiEvent
+
+    object Pop : NewsDetailUiEvent
 }
