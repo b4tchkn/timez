@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">timez</string>
 
+    <string name="days_ago">日前</string>
+    <string name="hours_ago">時間前</string>
+
     <string name="top_breaking_news">ニュース速報</string>
     <string name="top_recent_news">最近のニュース</string>
     <string name="top_empty_news">最新ニュースを準備中\n厳選したニュースを、もうすぐお届けします</string>

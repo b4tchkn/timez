@@ -1,6 +1,7 @@
 package io.github.b4tchkn.timez.feature.newsdetail
 
 import MultiLocalePreviews
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,17 +40,24 @@ import coil3.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
+import io.github.b4tchkn.timez.core.FakeNowLocalDateTime
+import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
+import io.github.b4tchkn.timez.core.RelativeTime
+import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailScreenDefaultContentPreviewParameterProvider.Param
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content
+import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.MessageState
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.model.Source
 import io.github.b4tchkn.timez.ui.component.Gap
 import io.github.b4tchkn.timez.ui.component.LoadingBox
 import io.github.b4tchkn.timez.ui.component.MainSurface
+import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
+import kotlinx.datetime.LocalDateTime
 
 data class NewsDetailScreenNavArgs(
-    val article: Article,
+    val articleId: String,
 )
 
 @Destination(navArgsDelegate = NewsDetailScreenNavArgs::class)
@@ -58,6 +67,16 @@ fun NewsDetailScreen(
 ) {
     val viewModel = hiltViewModel<NewsDetailViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    viewModel.LaunchStateEffect(state.message, NewsDetailUiEvent.ClearMessage) {
+        when (it) {
+            MessageState.NavigatePop -> navigator.popBackStack()
+        }
+    }
+
+    BackHandler {
+        viewModel.take(NewsDetailUiEvent.Pop)
+    }
 
     Scaffold {
         LoadingBox(
@@ -71,7 +90,7 @@ fun NewsDetailScreen(
                 )
                 IconButton(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-                    onClick = { navigator.navigateUp() },
+                    onClick = { viewModel.take(NewsDetailUiEvent.Pop) },
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -175,8 +194,12 @@ private fun NewsDetailScreenDefaultContent(
             item { Gap(16.dp) }
             article.publishedAt?.let {
                 item {
+                    val relativeText = when (val relativeTime = it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)) {
+                        is RelativeTime.Days -> "${relativeTime.days}${stringResource(R.string.days_ago)}"
+                        is RelativeTime.Hours -> "${relativeTime.hours}${stringResource(R.string.hours_ago)}"
+                    }
                     Text(
-                        text = it,
+                        text = relativeText,
                         style = TimezTheme.typography.h14,
                         color = TimezTheme.color.gray,
                     )
@@ -214,11 +237,13 @@ private fun NewsDetailScreenDefaultContent(
 private fun PreviewNewsDetailScreenDefaultContent(
     @PreviewParameter(NewsDetailScreenDefaultContentPreviewParameterProvider::class) param: Param,
 ) {
-    MainSurface {
-        NewsDetailScreenContent(
-            content = param.content,
-            onReadMoreClick = { },
-        )
+    CompositionLocalProvider(LocalNowLocalDateTime provides FakeNowLocalDateTime) {
+        MainSurface {
+            NewsDetailScreenContent(
+                content = param.content,
+                onReadMoreClick = { },
+            )
+        }
     }
 }
 
@@ -228,7 +253,7 @@ private class NewsDetailScreenDefaultContentPreviewParameterProvider : PreviewPa
             Content.Default(
                 article = Article.Default.copy(
                     title = "Title",
-                    publishedAt = "2021-01-01",
+                    publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
                     description = "This is content.".repeat(10),
                     source = Source.Default.copy(name = "SourceName"),
                 ),

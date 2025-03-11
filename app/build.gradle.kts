@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.molecule.runtime)
 
     implementation(libs.kotlinx.serilization.json)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serilization)

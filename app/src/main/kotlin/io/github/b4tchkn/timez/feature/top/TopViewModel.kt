@@ -34,7 +34,10 @@ class TopViewModel @Inject constructor(
         fun refresh() = scope.launch(loading = { loading = it }) {
             runCatching { newsRepository.topHeadlines() }
                 .onSuccess { articles = it }
-                .onFailure { error = it }
+                .onFailure {
+                    error = it
+                    it.printStackTrace()
+                }
         }
 
         LaunchedEffect(Unit) { refresh() }
@@ -72,3 +75,6 @@ data class TopUiModel(
 sealed interface TopUiEvent {
     data object Refresh : TopUiEvent
 }
+
+// TODO: Remove this when impl MemoryDataStore
+val navArgsMap = mutableMapOf<String, Any>()
