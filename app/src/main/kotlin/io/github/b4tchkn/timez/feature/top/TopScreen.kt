@@ -81,11 +81,13 @@ fun TopScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val unknownErrorSnackbarMessage = stringResource(R.string.snackbar_unknown_error_message)
+
     viewModel.LaunchStateEffect(state.message, TopUiEvent.ClearMessage) {
         when (it) {
             TopUiModel.MessageState.Error -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar("Error")
+                    snackbarHostState.showSnackbar(unknownErrorSnackbarMessage)
                 }
             }
         }
