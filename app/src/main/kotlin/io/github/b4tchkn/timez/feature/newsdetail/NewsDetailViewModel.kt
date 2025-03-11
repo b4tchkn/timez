@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.b4tchkn.timez.feature.navArgs
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Default
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Empty
+import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.MessageState
 import io.github.b4tchkn.timez.feature.top.navArgsMap
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
@@ -27,6 +28,7 @@ class NewsDetailViewModel @Inject constructor(
         var loading by remember { mutableStateOf(false) }
         var error by remember { mutableStateOf<Throwable?>(null) }
         var article by remember { mutableStateOf<Article?>(null) }
+        var message by remember { mutableStateOf<MessageState?>(null) }
 
         val scope = rememberCoroutineScope()
 
@@ -34,15 +36,28 @@ class NewsDetailViewModel @Inject constructor(
             runCatching {
                 savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
             }.onSuccess {
-                article = navArgsMap[it] as Article?
+                val newArticle = navArgsMap[it] as Article?
+                article = newArticle?.copy(id = it)
             }.onFailure {
                 error = it
-                navArgsMap.clear()
                 error?.printStackTrace()
             }
         }
 
         LaunchedEffect(Unit) { refresh() }
+
+        LaunchedEffect(Unit) {
+            events.collect {
+                when (it) {
+                    NewsDetailUiEvent.ClearMessage -> message = null
+                    NewsDetailUiEvent.Refresh -> refresh()
+                    NewsDetailUiEvent.Pop -> {
+                        navArgsMap.remove(article?.id)
+                        message = MessageState.NavigatePop
+                    }
+                }
+            }
+        }
 
         return NewsDetailUiModel(
             loading = loading,
@@ -50,6 +65,7 @@ class NewsDetailViewModel @Inject constructor(
             content = article?.let {
                 Default(article = it)
             } ?: Empty,
+            message = message,
         )
     }
 }
@@ -58,6 +74,7 @@ data class NewsDetailUiModel(
     val loading: Boolean,
     val error: Throwable?,
     val content: Content,
+    val message: MessageState?,
 ) {
     sealed interface Content {
         data class Default(
@@ -66,9 +83,15 @@ data class NewsDetailUiModel(
 
         data object Empty : Content
     }
+
+    sealed interface MessageState {
+        object NavigatePop : MessageState
+    }
 }
 
 sealed interface NewsDetailUiEvent {
+    object ClearMessage : NewsDetailUiEvent
+
     data object Refresh : NewsDetailUiEvent
 
     object Pop : NewsDetailUiEvent

@@ -1,6 +1,7 @@
 package io.github.b4tchkn.timez.feature.newsdetail
 
 import MultiLocalePreviews
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -45,11 +46,13 @@ import io.github.b4tchkn.timez.core.RelativeTime
 import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailScreenDefaultContentPreviewParameterProvider.Param
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content
+import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.MessageState
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.model.Source
 import io.github.b4tchkn.timez.ui.component.Gap
 import io.github.b4tchkn.timez.ui.component.LoadingBox
 import io.github.b4tchkn.timez.ui.component.MainSurface
+import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.datetime.LocalDateTime
 
@@ -65,6 +68,16 @@ fun NewsDetailScreen(
     val viewModel = hiltViewModel<NewsDetailViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    viewModel.LaunchStateEffect(state.message, NewsDetailUiEvent.ClearMessage) {
+        when (it) {
+            MessageState.NavigatePop -> navigator.popBackStack()
+        }
+    }
+
+    BackHandler {
+        viewModel.take(NewsDetailUiEvent.Pop)
+    }
+
     Scaffold {
         LoadingBox(
             modifier = Modifier.padding(it),
@@ -77,7 +90,7 @@ fun NewsDetailScreen(
                 )
                 IconButton(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-                    onClick = { navigator.navigateUp() },
+                    onClick = { viewModel.take(NewsDetailUiEvent.Pop) },
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
