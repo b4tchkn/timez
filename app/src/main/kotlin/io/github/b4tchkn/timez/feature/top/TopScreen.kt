@@ -22,10 +22,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,10 +63,11 @@ import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.component.Gap
 import io.github.b4tchkn.timez.ui.component.LoadingBox
 import io.github.b4tchkn.timez.ui.component.MainSurface
+import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
@@ -73,8 +78,23 @@ fun TopScreen(
 ) {
     val viewModel = hiltViewModel<TopViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    viewModel.LaunchStateEffect(state.message, TopUiEvent.ClearMessage) {
+        when (it) {
+            TopUiModel.MessageState.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Error")
+                }
+            }
+        }
+    }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = { Text("TIMEZ") },
@@ -251,7 +271,10 @@ private fun TopArticle(
                         )
                     }
                     article.publishedAt?.let {
-                        val relativeText = when (val relativeTime = it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)) {
+                        val relativeText = when (
+                            val relativeTime =
+                                it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)
+                        ) {
                             is RelativeTime.Days -> "${relativeTime.days}${stringResource(R.string.days_ago)}"
                             is RelativeTime.Hours -> "${relativeTime.hours}${stringResource(R.string.hours_ago)}"
                         }

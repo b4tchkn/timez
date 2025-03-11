@@ -26,6 +26,7 @@ class TopViewModel @Inject constructor(
         var loading by remember { mutableStateOf(false) }
         var error by remember { mutableStateOf<Throwable?>(null) }
         var articles by remember { mutableStateOf<List<Article>?>(null) }
+        var message by remember { mutableStateOf<TopUiModel.MessageState?>(null) }
 
         val scope = rememberCoroutineScope()
 
@@ -34,8 +35,22 @@ class TopViewModel @Inject constructor(
                 .onSuccess { articles = it }
                 .onFailure {
                     error = it
+                    message = TopUiModel.MessageState.Error
                     it.printStackTrace()
                 }
+        }
+
+        fun content(): TopUiModel.Content? {
+            if (error != null) {
+                return TopUiModel.Content.Empty
+            }
+
+            return articles?.let {
+                if (it.isNotEmpty())
+                    TopUiModel.Content.Default(articles = it)
+                else
+                    TopUiModel.Content.Empty
+            }
         }
 
         LaunchedEffect(Unit) { refresh() }
@@ -44,27 +59,23 @@ class TopViewModel @Inject constructor(
             events.collect {
                 when (it) {
                     TopUiEvent.Refresh -> refresh()
+                    TopUiEvent.ClearMessage -> message = null
                 }
             }
         }
 
         return TopUiModel(
             loading = loading,
-            error = error,
-            content = articles?.let {
-                if (it.isNotEmpty())
-                    TopUiModel.Content.Default(articles = it)
-                else
-                    TopUiModel.Content.Empty
-            },
+            content = content(),
+            message = message,
         )
     }
 }
 
 data class TopUiModel(
     val loading: Boolean,
-    val error: Throwable?,
     val content: Content?,
+    val message: MessageState?,
 ) {
     sealed interface Content {
         data class Default(
@@ -73,9 +84,15 @@ data class TopUiModel(
 
         data object Empty : Content
     }
+
+    sealed interface MessageState {
+        data object Error : MessageState
+    }
 }
 
 sealed interface TopUiEvent {
+    data object ClearMessage : TopUiEvent
+
     data object Refresh : TopUiEvent
 }
 
