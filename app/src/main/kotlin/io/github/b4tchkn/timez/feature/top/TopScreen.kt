@@ -91,8 +91,11 @@ fun TopScreen(
             modifier = Modifier.padding(padding),
             loading = state.loading,
         ) {
+            val content = state.content
+            if (content == null) return@LoadingBox
+
             TopScreenContent(
-                content = state.content,
+                content = content,
                 onArticleClick = { article ->
                     val articleId = Random.nextInt(0, 100000).toString()
                     navArgsMap[articleId] = article
