@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -90,6 +91,9 @@ fun NewsDetailScreen(
                 )
                 IconButton(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+                    colors = IconButtonDefaults.iconButtonColors().copy(
+                        containerColor = TimezTheme.color.black.copy(alpha = 0.3F),
+                    ),
                     onClick = { viewModel.take(NewsDetailUiEvent.Pop) },
                 ) {
                     Icon(
