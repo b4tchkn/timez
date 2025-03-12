@@ -3,6 +3,7 @@ package io.github.b4tchkn.timez.feature
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
+import io.github.b4tchkn.timez.fake.FakeArticleNavArgsRepository
 import io.github.b4tchkn.timez.fake.FakeNewsRepository
 import io.github.b4tchkn.timez.feature.top.TopUiEvent
 import io.github.b4tchkn.timez.feature.top.TopUiModel
@@ -19,9 +20,9 @@ import org.junit.Test
 class TopViewModelTest {
     @Test
     fun `on launch, top headlines are loaded`() = runTest {
-        val newsRepository = FakeNewsRepository()
         val viewModel = TopViewModel(
-            newsRepository = newsRepository,
+            newsRepository = FakeNewsRepository(),
+            articleNavArgsRepository = FakeArticleNavArgsRepository(),
         )
 
         moleculeFlow(mode = RecompositionMode.Immediate) {
@@ -40,6 +41,7 @@ class TopViewModelTest {
         val newsRepository = FakeNewsRepository()
         val viewModel = TopViewModel(
             newsRepository = newsRepository,
+            articleNavArgsRepository = FakeArticleNavArgsRepository(),
         )
         val events = Channel<TopUiEvent>()
 
@@ -68,9 +70,9 @@ class TopViewModelTest {
 
     @Test
     fun `on error, top headlines are not loaded`() = runTest {
-        val newsRepository = FakeNewsRepository(shouldFail = true)
         val viewModel = TopViewModel(
-            newsRepository = newsRepository,
+            newsRepository = FakeNewsRepository(shouldFail = true),
+            articleNavArgsRepository = FakeArticleNavArgsRepository(),
         )
         val events = Channel<TopUiEvent>()
 

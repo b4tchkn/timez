@@ -65,7 +65,6 @@ import io.github.b4tchkn.timez.ui.component.rememberAppSnackbarState
 import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.datetime.LocalDateTime
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
@@ -85,6 +84,8 @@ fun TopScreen(
             TopUiModel.MessageState.Error -> {
                 snackbarState.showSnackbar(unknownErrorSnackbarMessage)
             }
+
+            is TopUiModel.MessageState.NavigateNewsDetail -> navigator.navigate(NewsDetailScreenDestination(it.articleId))
         }
     }
 
@@ -108,18 +109,11 @@ fun TopScreen(
             modifier = Modifier.padding(padding),
             loading = state.loading,
         ) {
-            val content = state.content
-            if (content == null) return@LoadingBox
+            val content = state.content ?: return@LoadingBox
 
             TopScreenContent(
                 content = content,
-                onArticleClick = { article ->
-                    val articleId = Random.nextInt(0, 100000).toString()
-                    navArgsMap[articleId] = article
-                    navigator.navigate(
-                        NewsDetailScreenDestination(articleId),
-                    )
-                },
+                onArticleClick = { viewModel.take(TopUiEvent.ClickArticle(it)) },
             )
         }
     }

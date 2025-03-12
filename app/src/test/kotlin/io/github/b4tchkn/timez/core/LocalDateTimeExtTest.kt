@@ -1,7 +1,5 @@
-package io.github.b4tchkn.timez.ui.foundation
+package io.github.b4tchkn.timez.core
 
-import io.github.b4tchkn.timez.core.RelativeTime
-import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
 import junit.framework.TestCase.assertEquals
 import kotlinx.datetime.LocalDateTime
 import org.junit.Test

@@ -9,11 +9,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.b4tchkn.timez.data.repository.ArticleNavArgsRepository
 import io.github.b4tchkn.timez.feature.navArgs
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Default
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Empty
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.MessageState
-import io.github.b4tchkn.timez.feature.top.navArgsMap
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val articleNavArgsRepository: ArticleNavArgsRepository,
 ) : MoleculeViewModel<NewsDetailUiEvent, NewsDetailUiModel>() {
     @Composable
     override fun state(events: Flow<NewsDetailUiEvent>): NewsDetailUiModel {
@@ -36,8 +37,7 @@ class NewsDetailViewModel @Inject constructor(
             runCatching {
                 savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
             }.onSuccess {
-                val newArticle = navArgsMap[it] as Article?
-                article = newArticle?.copy(id = it)
+                article = articleNavArgsRepository.get(it)
             }.onFailure {
                 error = it
                 error?.printStackTrace()
@@ -52,7 +52,8 @@ class NewsDetailViewModel @Inject constructor(
                     NewsDetailUiEvent.ClearMessage -> message = null
                     NewsDetailUiEvent.Refresh -> refresh()
                     NewsDetailUiEvent.Pop -> {
-                        navArgsMap.remove(article?.id)
+                        val articleId = savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
+                        articleNavArgsRepository.remove(articleId)
                         message = MessageState.NavigatePop
                     }
                 }
