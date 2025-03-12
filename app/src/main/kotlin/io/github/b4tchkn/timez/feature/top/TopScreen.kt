@@ -23,12 +23,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,9 +61,9 @@ import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.component.Gap
 import io.github.b4tchkn.timez.ui.component.LoadingBox
 import io.github.b4tchkn.timez.ui.component.MainSurface
+import io.github.b4tchkn.timez.ui.component.rememberAppSnackbarState
 import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlin.random.Random
 
@@ -79,23 +77,21 @@ fun TopScreen(
     val viewModel = hiltViewModel<TopViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarState = rememberAppSnackbarState()
 
     val unknownErrorSnackbarMessage = stringResource(R.string.snackbar_unknown_error_message)
 
     viewModel.LaunchStateEffect(state.message, TopUiEvent.ClearMessage) {
         when (it) {
             TopUiModel.MessageState.Error -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(unknownErrorSnackbarMessage)
-                }
+                snackbarState.showSnackbar(unknownErrorSnackbarMessage)
             }
         }
     }
 
     Scaffold(
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(hostState = snackbarState.snackbarHostState)
         },
         topBar = {
             TopAppBar(
