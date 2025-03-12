@@ -228,6 +228,7 @@ private fun NewsDetailScreenDefaultContent(
                     }
                 }
             }
+            item { Gap(24.dp) }
         }
     }
 }

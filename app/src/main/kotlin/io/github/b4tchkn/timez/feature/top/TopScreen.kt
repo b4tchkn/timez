@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
@@ -34,7 +33,9 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -164,7 +165,6 @@ private fun TopScreenDefaultContent(
     LazyColumn(
         contentPadding = PaddingValues(
             horizontal = 16.dp,
-            vertical = 24.dp,
         ),
     ) {
         val breakingNews = articles.firstOrNull()
@@ -193,15 +193,14 @@ private fun TopScreenDefaultContent(
             item { Gap(8.dp) }
 
             item {
-                LazyColumn(
-                    modifier = Modifier.fillParentMaxSize(),
+                Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    userScrollEnabled = false,
+                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection()),
                 ) {
-                    items(articles.drop(1)) {
+                    for (article in articles.drop(1)) {
                         ArticleCard(
-                            article = it,
-                            onClick = { onArticleClick(it) },
+                            article = article,
+                            onClick = { onArticleClick(article) },
                         )
                     }
                 }
