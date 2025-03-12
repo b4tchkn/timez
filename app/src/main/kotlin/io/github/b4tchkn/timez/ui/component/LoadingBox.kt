@@ -17,14 +17,14 @@ import androidx.compose.ui.unit.dp
 fun LoadingBox(
     modifier: Modifier,
     loading: Boolean,
-    content: @Composable () -> Unit,
+    content: (@Composable () -> Unit)?,
 ) {
     Box(
         modifier = modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        content()
+        content?.invoke()
         if (loading) {
             Box(
                 modifier = Modifier

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
@@ -22,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -33,7 +33,9 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,10 +61,11 @@ import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.component.Gap
 import io.github.b4tchkn.timez.ui.component.LoadingBox
 import io.github.b4tchkn.timez.ui.component.MainSurface
+import io.github.b4tchkn.timez.ui.component.rememberAppSnackbarState
+import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.datetime.LocalDateTime
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
@@ -73,8 +76,22 @@ fun TopScreen(
 ) {
     val viewModel = hiltViewModel<TopViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarState = rememberAppSnackbarState()
+
+    val unknownErrorSnackbarMessage = stringResource(R.string.snackbar_unknown_error_message)
+
+    viewModel.LaunchStateEffect(state.message, TopUiEvent.ClearMessage) {
+        when (it) {
+            TopUiModel.MessageState.Error -> {
+                snackbarState.showSnackbar(unknownErrorSnackbarMessage)
+            }
+        }
+    }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarState.snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = { Text("TIMEZ") },
@@ -91,8 +108,11 @@ fun TopScreen(
             modifier = Modifier.padding(padding),
             loading = state.loading,
         ) {
+            val content = state.content
+            if (content == null) return@LoadingBox
+
             TopScreenContent(
-                content = state.content,
+                content = content,
                 onArticleClick = { article ->
                     val articleId = Random.nextInt(0, 100000).toString()
                     navArgsMap[articleId] = article
@@ -145,7 +165,6 @@ private fun TopScreenDefaultContent(
     LazyColumn(
         contentPadding = PaddingValues(
             horizontal = 16.dp,
-            vertical = 24.dp,
         ),
     ) {
         val breakingNews = articles.firstOrNull()
@@ -174,15 +193,14 @@ private fun TopScreenDefaultContent(
             item { Gap(8.dp) }
 
             item {
-                LazyColumn(
-                    modifier = Modifier.fillParentMaxSize(),
+                Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    userScrollEnabled = false,
+                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection()),
                 ) {
-                    items(articles.drop(1)) {
+                    for (article in articles.drop(1)) {
                         ArticleCard(
-                            article = it,
-                            onClick = { onArticleClick(it) },
+                            article = article,
+                            onClick = { onArticleClick(article) },
                         )
                     }
                 }
@@ -248,7 +266,10 @@ private fun TopArticle(
                         )
                     }
                     article.publishedAt?.let {
-                        val relativeText = when (val relativeTime = it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)) {
+                        val relativeText = when (
+                            val relativeTime =
+                                it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)
+                        ) {
                             is RelativeTime.Days -> "${relativeTime.days}${stringResource(R.string.days_ago)}"
                             is RelativeTime.Hours -> "${relativeTime.hours}${stringResource(R.string.hours_ago)}"
                         }

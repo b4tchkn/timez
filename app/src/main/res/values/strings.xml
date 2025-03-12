@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">timez</string>
 
+    <string name="snackbar_unknown_error_message">An unknown error occurred</string>
+
     <string name="days_ago">days ago</string>
     <string name="hours_ago">hours ago</string>
 

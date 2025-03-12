@@ -4,7 +4,6 @@ import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import io.github.b4tchkn.timez.fake.FakeNewsRepository
-import io.github.b4tchkn.timez.fake.fakeNewsRepositoryException
 import io.github.b4tchkn.timez.feature.top.TopUiEvent
 import io.github.b4tchkn.timez.feature.top.TopUiModel
 import io.github.b4tchkn.timez.feature.top.TopViewModel
@@ -29,7 +28,7 @@ class TopViewModelTest {
             viewModel.presenter(emptyFlow())
         }.distinctUntilChanged().test {
             assertEquals(
-                TopUiModel(loading = false, error = null, content = TopUiModel.Content.Empty),
+                TopUiModel(loading = false, content = null, message = null),
                 awaitItem(),
             )
             cancelAndConsumeRemainingEvents()
@@ -48,7 +47,7 @@ class TopViewModelTest {
             viewModel.presenter(events.receiveAsFlow())
         }.distinctUntilChanged().test {
             assertEquals(
-                TopUiModel(loading = false, error = null, content = TopUiModel.Content.Empty),
+                TopUiModel(loading = false, content = null, message = null),
                 awaitItem(),
             )
             skipItems(1)
@@ -60,7 +59,7 @@ class TopViewModelTest {
             newsRepository.articles.add(articles)
             events.send(TopUiEvent.Refresh)
             assertEquals(
-                TopUiModel(loading = false, error = null, content = TopUiModel.Content.Default(articles = articles)),
+                TopUiModel(loading = false, content = TopUiModel.Content.Default(articles = articles), message = null),
                 awaitItem(),
             )
             cancelAndConsumeRemainingEvents()
@@ -79,12 +78,12 @@ class TopViewModelTest {
             viewModel.presenter(events.receiveAsFlow())
         }.distinctUntilChanged().test {
             assertEquals(
-                TopUiModel(loading = false, error = null, content = TopUiModel.Content.Empty),
+                TopUiModel(loading = false, content = null, message = null),
                 awaitItem(),
             )
             events.send(TopUiEvent.Refresh)
             assertEquals(
-                TopUiModel(loading = false, error = fakeNewsRepositoryException, content = TopUiModel.Content.Empty),
+                TopUiModel(loading = false, content = TopUiModel.Content.Empty, message = TopUiModel.MessageState.Error),
                 awaitItem(),
             )
         }
