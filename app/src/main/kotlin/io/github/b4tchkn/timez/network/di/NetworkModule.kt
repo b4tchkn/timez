@@ -1,9 +1,10 @@
-package io.github.b4tchkn.timez.network
+package io.github.b4tchkn.timez.network.di
 
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.b4tchkn.timez.network.AuthHeaderInterceptor
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

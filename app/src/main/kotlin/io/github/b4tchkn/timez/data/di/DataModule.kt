@@ -1,4 +1,4 @@
-package io.github.b4tchkn.timez.data
+package io.github.b4tchkn.timez.data.di
 
 import dagger.Binds
 import dagger.Module
