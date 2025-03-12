@@ -8,15 +8,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.b4tchkn.timez.data.repository.NavArgsRepository
 import io.github.b4tchkn.timez.data.repository.NewsRepository
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
 import kotlinx.coroutines.flow.Flow
+import java.util.AbstractMap.SimpleEntry
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class TopViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
+    private val articleNavArgsRepository: NavArgsRepository<Article>,
 ) : MoleculeViewModel<TopUiEvent, TopUiModel>() {
     @Composable
     override fun state(events: Flow<TopUiEvent>): TopUiModel = presenter(events)
@@ -60,6 +64,11 @@ class TopViewModel @Inject constructor(
                 when (it) {
                     TopUiEvent.Refresh -> refresh()
                     TopUiEvent.ClearMessage -> message = null
+                    is TopUiEvent.ClickArticle -> {
+                        val articleId = Random.nextInt(0, 100000).toString()
+                        articleNavArgsRepository.save(SimpleEntry(articleId, it.article))
+                        message = TopUiModel.MessageState.NavigateNewsDetail(articleId)
+                    }
                 }
             }
         }
@@ -87,6 +96,10 @@ data class TopUiModel(
 
     sealed interface MessageState {
         data object Error : MessageState
+
+        data class NavigateNewsDetail(
+            val articleId: String,
+        ) : MessageState
     }
 }
 
@@ -94,7 +107,8 @@ sealed interface TopUiEvent {
     data object ClearMessage : TopUiEvent
 
     data object Refresh : TopUiEvent
-}
 
-// TODO: Remove this when impl MemoryDataStore
-val navArgsMap = mutableMapOf<String, Any>()
+    data class ClickArticle(
+        val article: Article,
+    ) : TopUiEvent
+}
