@@ -181,7 +181,7 @@ private fun TopScreenDefaultContent(
 
             item {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection()),
                 ) {
                     for (article in articles.drop(1)) {
