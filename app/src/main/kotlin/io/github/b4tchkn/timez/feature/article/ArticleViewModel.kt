@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.b4tchkn.timez.feature.navArgs
+import io.github.b4tchkn.timez.ui.component.AppWebViewClient
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -19,6 +20,7 @@ class ArticleViewModel @Inject constructor(
 ) : MoleculeViewModel<ArticleUiEvent, ArticleUiModel>() {
     @Composable
     override fun state(events: Flow<ArticleUiEvent>): ArticleUiModel {
+        val webViewClient = remember { AppWebViewClient() }
         var message by remember { mutableStateOf<ArticleUiModel.MessageState?>(null) }
 
         LaunchedEffect(Unit) {
@@ -31,8 +33,10 @@ class ArticleViewModel @Inject constructor(
         }
 
         return ArticleUiModel(
+            loading = webViewClient.loading,
             content = ArticleUiModel.Content.Default(
                 url = savedStateHandle.navArgs<ArticleScreenNavArgs>().url,
+                client = webViewClient,
             ),
             message = message,
         )
@@ -40,12 +44,14 @@ class ArticleViewModel @Inject constructor(
 }
 
 data class ArticleUiModel(
+    val loading: Boolean,
     val content: Content,
     val message: MessageState?,
 ) {
     sealed interface Content {
         data class Default(
             val url: String,
+            val client: AppWebViewClient,
         ) : Content
     }
 

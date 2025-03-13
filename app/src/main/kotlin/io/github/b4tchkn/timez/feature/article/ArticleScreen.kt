@@ -1,12 +1,15 @@
 package io.github.b4tchkn.timez.feature.article
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -56,10 +59,20 @@ fun ArticleScreen(
             )
         },
     ) { innerPadding ->
-        ArticleScreen(
-            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-            content = state.content,
-        )
+        Column(
+            modifier = Modifier
+                .padding(top = innerPadding.calculateTopPadding())
+                .fillMaxWidth(),
+        ) {
+            if (state.loading)
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+            ArticleScreen(
+                content = state.content,
+            )
+        }
     }
 }
 
@@ -73,6 +86,7 @@ private fun ArticleScreen(
             AppWebView(
                 modifier = modifier
                     .fillMaxSize(),
+                client = content.client,
                 url = content.url,
             )
     }
