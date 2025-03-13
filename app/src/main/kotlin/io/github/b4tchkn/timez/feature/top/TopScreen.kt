@@ -1,29 +1,29 @@
 package io.github.b4tchkn.timez.feature.top
 
 import MultiLocalePreviews
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -66,7 +66,7 @@ import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.datetime.LocalDateTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RootNavGraph(start = true)
 @Destination
 @Composable
@@ -93,20 +93,8 @@ fun TopScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarState.snackbarHostState)
         },
-        topBar = {
-            TopAppBar(
-                title = { Text("TIMEZ") },
-                actions = {
-                    IconButton(onClick = { viewModel.take(TopUiEvent.Refresh) }) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh")
-                    }
-                },
-            )
-        },
-    ) { padding ->
-
+    ) {
         LoadingBox(
-            modifier = Modifier.padding(padding),
             loading = state.loading,
         ) {
             val content = state.content ?: return@LoadingBox
@@ -121,17 +109,19 @@ fun TopScreen(
 
 @Composable
 private fun TopScreenContent(
+    modifier: Modifier = Modifier,
     content: Content,
     onArticleClick: (Article) -> Unit,
 ) {
     when (content) {
         is Content.Default -> TopScreenDefaultContent(
+            modifier = modifier,
             articles = content.articles,
             onArticleClick = onArticleClick,
         )
 
         Content.Empty -> Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -153,10 +143,12 @@ private fun TopScreenContent(
 
 @Composable
 private fun TopScreenDefaultContent(
+    modifier: Modifier = Modifier,
     articles: List<Article>,
     onArticleClick: (Article) -> Unit,
 ) {
     LazyColumn(
+        modifier = modifier,
         contentPadding = PaddingValues(
             horizontal = 16.dp,
         ),
@@ -164,6 +156,7 @@ private fun TopScreenDefaultContent(
         val breakingNews = articles.firstOrNull()
 
         if (breakingNews != null) {
+            item { Spacer(Modifier.windowInsetsTopHeight(WindowInsets.systemBars)) }
             item {
                 TopArticle(
                     article = breakingNews,
@@ -198,6 +191,12 @@ private fun TopScreenDefaultContent(
                         )
                     }
                 }
+            }
+
+            item { Gap(24.dp) }
+
+            item {
+                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
             }
         }
     }

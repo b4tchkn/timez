@@ -79,9 +79,8 @@ fun NewsDetailScreen(
         viewModel.take(NewsDetailUiEvent.Pop)
     }
 
-    Scaffold {
+    Scaffold { innerPadding ->
         LoadingBox(
-            modifier = Modifier.padding(it),
             loading = false,
         ) {
             Box {
@@ -90,7 +89,10 @@ fun NewsDetailScreen(
                     onReadMoreClick = { /* TODO */ },
                 )
                 IconButton(
-                    modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+                    modifier = Modifier.padding(
+                        top = innerPadding.calculateTopPadding(),
+                        start = 16.dp,
+                    ),
                     colors = IconButtonDefaults.iconButtonColors().copy(
                         containerColor = TimezTheme.color.black.copy(alpha = 0.3F),
                     ),
