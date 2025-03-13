@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LoadingBox(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     loading: Boolean,
     content: (@Composable () -> Unit)?,
 ) {
