@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.b4tchkn.timez.core.onFailureIgnoreCancellation
 import io.github.b4tchkn.timez.data.repository.NavArgsRepository
 import io.github.b4tchkn.timez.data.repository.NewsRepository
 import io.github.b4tchkn.timez.model.Article
@@ -37,7 +38,7 @@ class TopViewModel @Inject constructor(
         fun refresh() = scope.launch(loading = { loading = it }) {
             runCatching { newsRepository.topHeadlines() }
                 .onSuccess { articles = it }
-                .onFailure {
+                .onFailureIgnoreCancellation {
                     error = it
                     message = TopUiModel.MessageState.Error
                     it.printStackTrace()
