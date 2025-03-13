@@ -21,9 +21,11 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -66,6 +68,7 @@ import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.datetime.LocalDateTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RootNavGraph(start = true)
 @Destination
@@ -99,10 +102,15 @@ fun TopScreen(
         ) {
             val content = state.content ?: return@LoadingBox
 
-            TopScreenContent(
-                content = content,
-                onArticleClick = { viewModel.take(TopUiEvent.ClickArticle(it)) },
-            )
+            PullToRefreshBox(
+                isRefreshing = state.loading,
+                onRefresh = { viewModel.take(TopUiEvent.Refresh) },
+            ) {
+                TopScreenContent(
+                    content = content,
+                    onArticleClick = { viewModel.take(TopUiEvent.ClickArticle(it)) },
+                )
+            }
         }
     }
 }
