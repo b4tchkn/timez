@@ -56,6 +56,8 @@ class NewsDetailViewModel @Inject constructor(
                         articleNavArgsRepository.remove(articleId)
                         message = MessageState.NavigatePop
                     }
+
+                    is NewsDetailUiEvent.ClickReadMore -> message = MessageState.NavigateArticle(it.url)
                 }
             }
         }
@@ -86,14 +88,22 @@ data class NewsDetailUiModel(
     }
 
     sealed interface MessageState {
-        object NavigatePop : MessageState
+        data class NavigateArticle(
+            val url: String,
+        ) : MessageState
+
+        data object NavigatePop : MessageState
     }
 }
 
 sealed interface NewsDetailUiEvent {
-    object ClearMessage : NewsDetailUiEvent
+    data object ClearMessage : NewsDetailUiEvent
 
     data object Refresh : NewsDetailUiEvent
 
-    object Pop : NewsDetailUiEvent
+    data class ClickReadMore(
+        val url: String,
+    ) : NewsDetailUiEvent
+
+    data object Pop : NewsDetailUiEvent
 }
