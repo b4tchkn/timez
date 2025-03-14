@@ -7,14 +7,19 @@ on:
       - main
 
 jobs:
-  ktlint:
+  lint-check:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: ktlint
         uses: ScaCap/action-ktlint@26c5e9b625966139d9956cbbb6217375480d4e14 # v1.9.0
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
           fail_on_error: true
+
+      - name: lint
+        run: ./gradlew lint

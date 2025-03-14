@@ -14,9 +14,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun AppWebView(
-    modifier: Modifier = Modifier,
     client: AppWebViewClient,
     url: String,
+    modifier: Modifier = Modifier,
 ) {
     AndroidView(
         modifier = modifier,

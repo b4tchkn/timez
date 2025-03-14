@@ -1,5 +1,6 @@
 package io.github.b4tchkn.timez.feature.article
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,13 +30,14 @@ data class ArticleScreenNavArgs(
     val url: String,
 )
 
+@SuppressLint("ComposeModifierMissing")
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination(navArgsDelegate = ArticleScreenNavArgs::class)
 @Composable
 fun ArticleScreen(
     navigator: DestinationsNavigator,
+    viewModel: ArticleViewModel = hiltViewModel(),
 ) {
-    val viewModel = hiltViewModel<ArticleViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     viewModel.LaunchStateEffect(state.message, ArticleUiEvent.ClearMessage) {
@@ -78,8 +80,8 @@ fun ArticleScreen(
 
 @Composable
 private fun ArticleScreen(
-    modifier: Modifier = Modifier,
     content: ArticleUiModel.Content,
+    modifier: Modifier = Modifier,
 ) {
     when (content) {
         is ArticleUiModel.Content.Default ->
