@@ -9,6 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.b4tchkn.timez.core.onFailureIgnoreCancellation
 import io.github.b4tchkn.timez.data.repository.ArticleNavArgsRepository
 import io.github.b4tchkn.timez.feature.navArgs
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Default
@@ -38,7 +39,7 @@ class NewsDetailViewModel @Inject constructor(
                 savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
             }.onSuccess {
                 article = articleNavArgsRepository.get(it)
-            }.onFailure {
+            }.onFailureIgnoreCancellation {
                 error = it
                 error?.printStackTrace()
             }
