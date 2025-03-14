@@ -45,6 +45,7 @@ import io.github.b4tchkn.timez.core.FakeNowLocalDateTime
 import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
 import io.github.b4tchkn.timez.core.RelativeTime
 import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
+import io.github.b4tchkn.timez.feature.destinations.ArticleScreenDestination
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailScreenDefaultContentPreviewParameterProvider.Param
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.MessageState
@@ -72,6 +73,9 @@ fun NewsDetailScreen(
     viewModel.LaunchStateEffect(state.message, NewsDetailUiEvent.ClearMessage) {
         when (it) {
             MessageState.NavigatePop -> navigator.popBackStack()
+            is MessageState.NavigateArticle -> navigator.navigate(
+                ArticleScreenDestination(it.url),
+            )
         }
     }
 
@@ -86,7 +90,7 @@ fun NewsDetailScreen(
             Box {
                 NewsDetailScreenContent(
                     content = state.content,
-                    onReadMoreClick = { /* TODO */ },
+                    onReadMoreClick = { viewModel.take(NewsDetailUiEvent.ClickReadMore(it)) },
                 )
                 IconButton(
                     modifier = Modifier.padding(
@@ -112,7 +116,7 @@ fun NewsDetailScreen(
 @Composable
 private fun NewsDetailScreenContent(
     content: Content,
-    onReadMoreClick: () -> Unit,
+    onReadMoreClick: (url: String) -> Unit,
 ) {
     when (content) {
         is Content.Default -> {
@@ -130,7 +134,7 @@ private fun NewsDetailScreenContent(
 private fun NewsDetailScreenDefaultContent(
     modifier: Modifier = Modifier,
     article: Article,
-    onReadMoreClick: () -> Unit,
+    onReadMoreClick: (url: String) -> Unit,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -212,25 +216,27 @@ private fun NewsDetailScreenDefaultContent(
                 }
             }
             item { Gap(32.dp) }
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                ) {
-                    OutlinedButton(
+            article.url?.let {
+                item {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.Center),
-                        colors = ButtonDefaults.outlinedButtonColors().copy(
-                            containerColor = TimezTheme.color.white.copy(alpha = 0.08f),
-                        ),
-                        onClick = onReadMoreClick,
+                            .fillMaxWidth(),
                     ) {
-                        Text(stringResource(R.string.news_detail_read_more))
-                        Gap(4.dp)
-                        Icon(
-                            Icons.AutoMirrored.Default.KeyboardArrowRight,
-                            contentDescription = null,
-                        )
+                        OutlinedButton(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            colors = ButtonDefaults.outlinedButtonColors().copy(
+                                containerColor = TimezTheme.color.white.copy(alpha = 0.08f),
+                            ),
+                            onClick = { onReadMoreClick(it) },
+                        ) {
+                            Text(stringResource(R.string.news_detail_read_more))
+                            Gap(4.dp)
+                            Icon(
+                                Icons.AutoMirrored.Default.KeyboardArrowRight,
+                                contentDescription = null,
+                            )
+                        }
                     }
                 }
             }
