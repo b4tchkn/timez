@@ -70,6 +70,7 @@ dependencies {
 
     implementation(libs.kotlinx.serilization.json)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.collection.immutable)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serilization)
@@ -89,6 +90,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    lintChecks(libs.slack.lint.compose)
 }
 
 secrets {
