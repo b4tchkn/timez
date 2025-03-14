@@ -13,6 +13,7 @@ okhttp = "4.12.0"
 retrofit = "2.11.0"
 kotlinxSerilization = "1.8.0"
 kotlinxDateTime = "0.6.2"
+robolectric = "4.14.1"
 secretsGradle = "2.0.1"
 hilt = "2.55"
 ksp = "2.1.10-1.0.31"
@@ -49,6 +50,7 @@ retrofit-kotlinx-serilization = { group = "com.squareup.retrofit2", name = "conv
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 molecule-runtime = { group = "app.cash.molecule", name = "molecule-runtime", version.ref = "molecule" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
