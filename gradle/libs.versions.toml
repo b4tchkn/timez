@@ -2,6 +2,9 @@
 agp = "8.9.0"
 kotlin = "2.1.10"
 kotlinxCoroutines = "1.10.1"
+kotlinxSerilization = "1.8.0"
+kotlinxDateTime = "0.6.2"
+kotlinxCollectionImutable = "0.3.8"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -11,8 +14,6 @@ activityCompose = "1.10.1"
 composeBom = "2025.03.00"
 okhttp = "4.12.0"
 retrofit = "2.11.0"
-kotlinxSerilization = "1.8.0"
-kotlinxDateTime = "0.6.2"
 robolectric = "4.14.1"
 secretsGradle = "2.0.1"
 hilt = "2.55"
@@ -23,6 +24,7 @@ timber = "5.0.1"
 coil = "3.1.0"
 destinations = "1.11.9"
 turbine = "1.2.0"
+slackLintCompose = "1.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +46,7 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 kotlinx-serilization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerilization" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDateTime" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+kotlinx-collection-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionImutable" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-kotlinx-serilization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
@@ -57,6 +60,7 @@ coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", versi
 destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "destinations" }
 destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "destinations" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+slack-lint-compose = { group = "com.slack.lint.compose", name = "compose-lint-checks", version.ref = "slackLintCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -13,6 +13,7 @@ import io.github.b4tchkn.timez.data.repository.NavArgsRepository
 import io.github.b4tchkn.timez.data.repository.NewsRepository
 import io.github.b4tchkn.timez.model.Article
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import java.util.AbstractMap.SimpleEntry
 import javax.inject.Inject
@@ -30,7 +31,7 @@ class TopViewModel @Inject constructor(
     fun presenter(events: Flow<TopUiEvent>): TopUiModel {
         var loading by remember { mutableStateOf(false) }
         var error by remember { mutableStateOf<Throwable?>(null) }
-        var articles by remember { mutableStateOf<List<Article>?>(null) }
+        var articles by remember { mutableStateOf<ImmutableList<Article>?>(null) }
         var message by remember { mutableStateOf<TopUiModel.MessageState?>(null) }
 
         val scope = rememberCoroutineScope()
@@ -89,7 +90,7 @@ data class TopUiModel(
 ) {
     sealed interface Content {
         data class Default(
-            val articles: List<Article>,
+            val articles: ImmutableList<Article>,
         ) : Content
 
         data object Empty : Content
