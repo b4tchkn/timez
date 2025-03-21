@@ -1,7 +1,6 @@
 package io.github.b4tchkn.timez.feature.newsdetail
 
 import MultiLocalePreviews
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -63,13 +62,12 @@ data class NewsDetailScreenNavArgs(
     val articleId: String,
 )
 
-@SuppressLint("ComposeModifierMissing")
 @Destination(navArgsDelegate = NewsDetailScreenNavArgs::class)
 @Composable
 fun NewsDetailScreen(
     navigator: DestinationsNavigator,
-    viewModel: NewsDetailViewModel = hiltViewModel(),
 ) {
+    val viewModel = hiltViewModel<NewsDetailViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     viewModel.LaunchStateEffect(state.message, NewsDetailUiEvent.ClearMessage) {
@@ -134,9 +132,9 @@ private fun NewsDetailScreenContent(
 
 @Composable
 private fun NewsDetailScreenDefaultContent(
+    modifier: Modifier = Modifier,
     article: Article,
     onReadMoreClick: (url: String) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),

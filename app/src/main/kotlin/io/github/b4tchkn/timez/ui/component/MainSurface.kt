@@ -8,12 +8,11 @@ import io.github.b4tchkn.timez.ui.theme.TimezTheme
 
 @Composable
 fun MainSurface(
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     TimezTheme {
         Surface(
-            modifier = modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
         ) {
             content()
         }

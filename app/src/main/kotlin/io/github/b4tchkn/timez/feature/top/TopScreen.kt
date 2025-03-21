@@ -66,19 +66,17 @@ import io.github.b4tchkn.timez.ui.component.MainSurface
 import io.github.b4tchkn.timez.ui.component.rememberAppSnackbarState
 import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ComposeModifierMissing")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RootNavGraph(start = true)
 @Destination
 @Composable
 fun TopScreen(
     navigator: DestinationsNavigator,
-    viewModel: TopViewModel = hiltViewModel(),
 ) {
+    val viewModel = hiltViewModel<TopViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarState = rememberAppSnackbarState()
 
@@ -119,9 +117,9 @@ fun TopScreen(
 
 @Composable
 private fun TopScreenContent(
+    modifier: Modifier = Modifier,
     content: Content,
     onArticleClick: (Article) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     when (content) {
         is Content.Default -> TopScreenDefaultContent(
@@ -153,9 +151,9 @@ private fun TopScreenContent(
 
 @Composable
 private fun TopScreenDefaultContent(
-    articles: ImmutableList<Article>,
-    onArticleClick: (Article) -> Unit,
     modifier: Modifier = Modifier,
+    articles: List<Article>,
+    onArticleClick: (Article) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -313,7 +311,7 @@ private class TopScreenPreviewParameterProvider : PreviewParameterProvider<Param
                         title = "Title $it",
                         publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
                     )
-                }.toImmutableList(),
+                },
             ),
         ),
         Param(Content.Empty),
