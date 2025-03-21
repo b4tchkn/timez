@@ -1,0 +1,15 @@
+name: test-check
+
+on:
+  pull_request:
+    types: [ opened, ready_for_review, reopened, synchronize ]
+
+jobs:
+  test-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: step one
+        run: echo "step one"
+      - name: step two
+        run: echo "step two"
