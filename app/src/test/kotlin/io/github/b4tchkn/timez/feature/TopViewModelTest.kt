@@ -11,7 +11,6 @@ import io.github.b4tchkn.timez.feature.top.TopUiModel
 import io.github.b4tchkn.timez.feature.top.TopViewModel
 import io.github.b4tchkn.timez.model.Article
 import junit.framework.TestCase.assertEquals
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -65,7 +64,7 @@ class TopViewModelTest {
             newsRepository.articles.add(articles)
             events.send(TopUiEvent.Refresh)
             assertEquals(
-                TopUiModel(loading = false, content = TopUiModel.Content.Default(articles = articles.toImmutableList()), message = null),
+                TopUiModel(loading = false, content = TopUiModel.Content.Default(articles = articles), message = null),
                 awaitItem(),
             )
             cancelAndConsumeRemainingEvents()
