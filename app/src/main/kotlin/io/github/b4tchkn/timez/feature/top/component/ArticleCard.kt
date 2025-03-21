@@ -38,11 +38,10 @@ import kotlinx.datetime.LocalDateTime
 fun ArticleCard(
     article: Article,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val cardSize = 120.dp
 
-    Column(modifier = modifier) {
+    Column {
         Card(
             modifier = Modifier
                 .height(cardSize)
