@@ -89,7 +89,11 @@ class TopViewModelTest {
             )
             events.send(TopUiEvent.Refresh)
             assertEquals(
-                TopUiModel(loading = false, content = TopUiModel.Content.Empty, message = TopUiModel.MessageState.Error),
+                TopUiModel(
+                    loading = false,
+                    content = TopUiModel.Content.Empty,
+                    message = TopUiModel.MessageState.Error,
+                ),
                 awaitItem(),
             )
         }
