@@ -1,5 +1,6 @@
 package io.github.b4tchkn.timez
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import io.github.b4tchkn.timez.feature.NavGraphs
 import io.github.b4tchkn.timez.feature.destinations.TopScreenDestination
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 
+@SuppressLint("ComposeModifierMissing")
 @Composable
 fun TimezApp() {
     val navController = rememberNavController()
