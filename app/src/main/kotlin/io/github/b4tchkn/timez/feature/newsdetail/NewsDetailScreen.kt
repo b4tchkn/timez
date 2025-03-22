@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -55,6 +56,7 @@ import io.github.b4tchkn.timez.model.Source
 import io.github.b4tchkn.timez.ui.component.Gap
 import io.github.b4tchkn.timez.ui.component.LoadingBox
 import io.github.b4tchkn.timez.ui.component.MainSurface
+import io.github.b4tchkn.timez.ui.component.rememberAppSnackbarState
 import io.github.b4tchkn.timez.ui.foundation.LaunchStateEffect
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.datetime.LocalDateTime
@@ -71,9 +73,15 @@ fun NewsDetailScreen(
     viewModel: NewsDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarState = rememberAppSnackbarState()
+
+    val unknownErrorSnackbarMessage = stringResource(R.string.snackbar_unknown_error_message)
 
     viewModel.LaunchStateEffect(state.message, NewsDetailUiEvent.ClearMessage) {
         when (it) {
+            MessageState.Error -> {
+                snackbarState.showSnackbar(unknownErrorSnackbarMessage)
+            }
             MessageState.NavigatePop -> navigator.popBackStack()
             is MessageState.NavigateArticle -> navigator.navigate(
                 ArticleScreenDestination(it.url),
@@ -85,7 +93,11 @@ fun NewsDetailScreen(
         viewModel.take(NewsDetailUiEvent.Pop)
     }
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarState.snackbarHostState)
+        },
+    ) { innerPadding ->
         LoadingBox(
             loading = false,
         ) {
