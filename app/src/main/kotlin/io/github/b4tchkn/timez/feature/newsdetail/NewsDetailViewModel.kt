@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.b4tchkn.timez.core.onFailureIgnoreCancellation
-import io.github.b4tchkn.timez.data.repository.ArticleNavArgsRepository
+import io.github.b4tchkn.timez.data.repository.NavArgsRepository
 import io.github.b4tchkn.timez.feature.navArgs
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Default
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Empty
@@ -23,12 +23,14 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val articleNavArgsRepository: ArticleNavArgsRepository,
+    private val articleNavArgsRepository: NavArgsRepository<Article>,
 ) : MoleculeViewModel<NewsDetailUiEvent, NewsDetailUiModel>() {
     @Composable
-    override fun state(events: Flow<NewsDetailUiEvent>): NewsDetailUiModel {
+    override fun state(events: Flow<NewsDetailUiEvent>): NewsDetailUiModel = presenter(events)
+
+    @Composable
+    fun presenter(events: Flow<NewsDetailUiEvent>): NewsDetailUiModel {
         var loading by remember { mutableStateOf(false) }
-        var error by remember { mutableStateOf<Throwable?>(null) }
         var article by remember { mutableStateOf<Article?>(null) }
         var message by remember { mutableStateOf<MessageState?>(null) }
 
@@ -36,12 +38,13 @@ class NewsDetailViewModel @Inject constructor(
 
         fun refresh() = scope.launch(loading = { loading = it }) {
             runCatching {
-                savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
+                val articleId = savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
+                articleNavArgsRepository.get(articleId)
             }.onSuccess {
-                article = articleNavArgsRepository.get(it)
+                article = it
             }.onFailureIgnoreCancellation {
-                error = it
-                error?.printStackTrace()
+                message = MessageState.Error
+                it.printStackTrace()
             }
         }
 
@@ -51,7 +54,6 @@ class NewsDetailViewModel @Inject constructor(
             events.collect {
                 when (it) {
                     NewsDetailUiEvent.ClearMessage -> message = null
-                    NewsDetailUiEvent.Refresh -> refresh()
                     NewsDetailUiEvent.Pop -> {
                         val articleId = savedStateHandle.navArgs<NewsDetailScreenNavArgs>().articleId
                         articleNavArgsRepository.remove(articleId)
@@ -65,7 +67,6 @@ class NewsDetailViewModel @Inject constructor(
 
         return NewsDetailUiModel(
             loading = loading,
-            error = error,
             content = article?.let {
                 Default(article = it)
             } ?: Empty,
@@ -76,7 +77,6 @@ class NewsDetailViewModel @Inject constructor(
 
 data class NewsDetailUiModel(
     val loading: Boolean,
-    val error: Throwable?,
     val content: Content,
     val message: MessageState?,
 ) {
@@ -89,6 +89,8 @@ data class NewsDetailUiModel(
     }
 
     sealed interface MessageState {
+        data object Error : MessageState
+
         data class NavigateArticle(
             val url: String,
         ) : MessageState
@@ -99,8 +101,6 @@ data class NewsDetailUiModel(
 
 sealed interface NewsDetailUiEvent {
     data object ClearMessage : NewsDetailUiEvent
-
-    data object Refresh : NewsDetailUiEvent
 
     data class ClickReadMore(
         val url: String,

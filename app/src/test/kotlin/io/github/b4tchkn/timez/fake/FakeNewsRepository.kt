@@ -13,11 +13,9 @@ class FakeNewsRepository(
 
     override suspend fun topHeadlines(): ImmutableList<Article> {
         if (shouldFail) {
-            throw fakeNewsRepositoryException
+            throw Exception()
         } else {
             return articles.awaitItem().toImmutableList()
         }
     }
 }
-
-val fakeNewsRepositoryException = Exception()
