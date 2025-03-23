@@ -73,6 +73,7 @@ fun ArticleCard(
                             style = TimezTheme.typography.h14.copy(
                                 fontWeight = FontWeight.Bold,
                             ),
+                            color = TimezTheme.color.textColor,
                             maxLines = 3,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -86,6 +87,7 @@ fun ArticleCard(
                         Text(
                             relativeText,
                             style = TimezTheme.typography.h12,
+                            color = TimezTheme.color.textColor,
                         )
                     }
                 }
