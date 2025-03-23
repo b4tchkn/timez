@@ -146,6 +146,7 @@ private fun TopScreenContent(
                 style = TimezTheme.typography.h20.copy(
                     textAlign = TextAlign.Center,
                 ),
+                color = TimezTheme.color.textColor,
             )
         }
     }
@@ -185,6 +186,7 @@ private fun TopScreenDefaultContent(
                     style = TimezTheme.typography.h20.copy(
                         fontWeight = FontWeight.Bold,
                     ),
+                    color = TimezTheme.color.textColor,
                 )
             }
             item { Gap(8.dp) }
@@ -223,6 +225,7 @@ private fun TopArticle(
             style = TimezTheme.typography.h24.copy(
                 fontWeight = FontWeight.Bold,
             ),
+            color = TimezTheme.color.textColor,
         )
         Gap(8.dp)
         Card(
@@ -264,8 +267,8 @@ private fun TopArticle(
                             it,
                             style = TimezTheme.typography.h20.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White,
                             ),
+                            color = TimezTheme.color.white,
                         )
                     }
                     article.publishedAt?.let {
@@ -279,9 +282,8 @@ private fun TopArticle(
                         Gap(4.dp)
                         Text(
                             text = relativeText,
-                            style = TimezTheme.typography.h14.copy(
-                                color = Color.White,
-                            ),
+                            style = TimezTheme.typography.h14,
+                            color = TimezTheme.color.white,
                         )
                     }
                     Gap(16.dp)

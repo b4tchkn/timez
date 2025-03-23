@@ -241,6 +241,7 @@ private fun NewsDetailScreenDefaultContent(
                                 .align(Alignment.Center),
                             colors = ButtonDefaults.outlinedButtonColors().copy(
                                 containerColor = TimezTheme.color.white.copy(alpha = 0.08f),
+                                contentColor = TimezTheme.color.primaryContainer,
                             ),
                             onClick = { onReadMoreClick(it) },
                         ) {
