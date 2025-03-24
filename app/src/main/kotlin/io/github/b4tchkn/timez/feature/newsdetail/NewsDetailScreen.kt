@@ -3,10 +3,15 @@ package io.github.b4tchkn.timez.feature.newsdetail
 import MultiLocalePreviews
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,19 +28,25 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,6 +93,7 @@ fun NewsDetailScreen(
             MessageState.Error -> {
                 snackbarState.showSnackbar(unknownErrorSnackbarMessage)
             }
+
             MessageState.NavigatePop -> navigator.popBackStack()
             is MessageState.NavigateArticle -> navigator.navigate(
                 ArticleScreenDestination(it.url),
@@ -199,21 +211,27 @@ private fun NewsDetailScreenDefaultContent(
                 item { Gap(8.dp) }
             }
             item {
-                Text(
-                    text = article.title ?: "-",
-                    style = TimezTheme.typography.h32.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    color = TimezTheme.color.white,
-                )
+                SlideAndFadeBox(
+                    delayMillis = 200,
+                ) {
+                    Text(
+                        text = article.title ?: "-",
+                        style = TimezTheme.typography.h32.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        color = TimezTheme.color.white,
+                    )
+                }
             }
             item { Gap(16.dp) }
             item {
-                Text(
-                    text = article.description ?: "-",
-                    style = TimezTheme.typography.h16,
-                    color = TimezTheme.color.white,
-                )
+                SlideAndFadeBox(delayMillis = 300) {
+                    Text(
+                        text = article.description ?: "-",
+                        style = TimezTheme.typography.h16,
+                        color = TimezTheme.color.white,
+                    )
+                }
             }
             item { Gap(16.dp) }
             article.publishedAt?.let {
@@ -222,17 +240,20 @@ private fun NewsDetailScreenDefaultContent(
                         is RelativeTime.Days -> "${relativeTime.days}${stringResource(R.string.days_ago)}"
                         is RelativeTime.Hours -> "${relativeTime.hours}${stringResource(R.string.hours_ago)}"
                     }
-                    Text(
-                        text = relativeText,
-                        style = TimezTheme.typography.h14,
-                        color = TimezTheme.color.gray,
-                    )
+                    SlideAndFadeBox(delayMillis = 400) {
+                        Text(
+                            text = relativeText,
+                            style = TimezTheme.typography.h14,
+                            color = TimezTheme.color.gray,
+                        )
+                    }
                 }
             }
             item { Gap(32.dp) }
             article.url?.let {
                 item {
-                    Box(
+                    SlideAndFadeBox(
+                        delayMillis = 500,
                         modifier = Modifier
                             .fillMaxWidth(),
                     ) {
@@ -256,6 +277,44 @@ private fun NewsDetailScreenDefaultContent(
             }
             item { Gap(24.dp) }
         }
+    }
+}
+
+@Composable
+private fun SlideAndFadeBox(
+    delayMillis: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val animationMillis = 300
+    val easing = LinearEasing
+
+    var shouldAnimate by remember { mutableStateOf(false) }
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (shouldAnimate) 1.0f else 0f,
+        animationSpec = tween(animationMillis, delayMillis, easing),
+        label = "alpha",
+    )
+    val animatedOffset by animateIntOffsetAsState(
+        targetValue = if (shouldAnimate) {
+            IntOffset.Zero
+        } else {
+            IntOffset(0, 100)
+        },
+        animationSpec = tween(animationMillis, delayMillis, easing),
+        label = "offset",
+    )
+
+    LaunchedEffect(Unit) {
+        shouldAnimate = true
+    }
+
+    Box(
+        modifier = modifier
+            .graphicsLayer { alpha = animatedAlpha }
+            .offset { animatedOffset },
+    ) {
+        content()
     }
 }
 
