@@ -22,7 +22,7 @@ androidxHiltNavigationCompose = "1.2.0"
 molecule = "2.0.0"
 timber = "5.0.1"
 coil = "3.1.0"
-destinations = "1.11.9"
+destinations = "2.1.0"
 turbine = "1.2.0"
 slackLintCompose = "1.4.2"
 
