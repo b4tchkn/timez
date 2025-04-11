@@ -1,7 +1,7 @@
 [versions]
 agp = "8.9.1"
 kotlin = "2.1.20"
-kotlinxCoroutines = "1.10.1"
+kotlinxCoroutines = "1.10.2"
 kotlinxSerilization = "1.8.1"
 kotlinxDateTime = "0.6.2"
 kotlinxCollectionImutable = "0.3.8"
