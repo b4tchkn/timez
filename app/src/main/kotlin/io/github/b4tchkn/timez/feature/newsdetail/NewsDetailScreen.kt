@@ -52,13 +52,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.ArticleScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
 import io.github.b4tchkn.timez.core.FakeNowLocalDateTime
 import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
 import io.github.b4tchkn.timez.core.RelativeTime
 import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
-import io.github.b4tchkn.timez.feature.destinations.ArticleScreenDestination
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailScreenDefaultContentPreviewParameterProvider.Param
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.MessageState
@@ -77,7 +78,7 @@ data class NewsDetailScreenNavArgs(
 )
 
 @SuppressLint("ComposeModifierMissing")
-@Destination(navArgsDelegate = NewsDetailScreenNavArgs::class)
+@Destination<RootGraph>(navArgs = NewsDetailScreenNavArgs::class)
 @Composable
 fun NewsDetailScreen(
     navigator: DestinationsNavigator,
@@ -254,12 +255,10 @@ private fun NewsDetailScreenDefaultContent(
                 item {
                     SlideAndFadeBox(
                         delayMillis = 500,
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         OutlinedButton(
-                            modifier = Modifier
-                                .align(Alignment.Center),
+                            modifier = Modifier.align(Alignment.Center),
                             colors = ButtonDefaults.outlinedButtonColors().copy(
                                 containerColor = TimezTheme.color.white.copy(alpha = 0.08f),
                                 contentColor = TimezTheme.color.primaryContainer,

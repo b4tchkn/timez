@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
 import io.github.b4tchkn.timez.feature.article.ArticleUiModel.MessageState.NavigatePop
@@ -32,7 +33,7 @@ data class ArticleScreenNavArgs(
 
 @SuppressLint("ComposeModifierMissing")
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination(navArgsDelegate = ArticleScreenNavArgs::class)
+@Destination<RootGraph>(navArgs = ArticleScreenNavArgs::class)
 @Composable
 fun ArticleScreen(
     navigator: DestinationsNavigator,
