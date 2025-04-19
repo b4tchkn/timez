@@ -49,13 +49,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.NewsDetailScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
 import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
 import io.github.b4tchkn.timez.core.RelativeTime
 import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
-import io.github.b4tchkn.timez.feature.destinations.NewsDetailScreenDestination
 import io.github.b4tchkn.timez.feature.top.TopScreenPreviewParameterProvider.Param
 import io.github.b4tchkn.timez.feature.top.TopUiModel.Content
 import io.github.b4tchkn.timez.feature.top.component.ArticleCard
@@ -72,8 +72,7 @@ import kotlinx.datetime.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ComposeModifierMissing")
-@RootNavGraph(start = true)
-@Destination
+@Destination<RootGraph>(start = true)
 @Composable
 fun TopScreen(
     navigator: DestinationsNavigator,

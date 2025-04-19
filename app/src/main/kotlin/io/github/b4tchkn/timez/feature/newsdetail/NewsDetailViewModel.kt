@@ -8,10 +8,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
+import com.ramcosta.composedestinations.generated.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.b4tchkn.timez.core.onFailureIgnoreCancellation
 import io.github.b4tchkn.timez.data.repository.NavArgsRepository
-import io.github.b4tchkn.timez.feature.navArgs
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Default
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.Content.Empty
 import io.github.b4tchkn.timez.feature.newsdetail.NewsDetailUiModel.MessageState
