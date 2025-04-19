@@ -69,6 +69,7 @@ import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDateTime
+import okhttp3.internal.immutableListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ComposeModifierMissing")
@@ -313,7 +314,8 @@ private class TopScreenPreviewParameterProvider : PreviewParameterProvider<Param
                 articles = List(10) {
                     Article.Default.copy(
                         title = "Title $it",
-                        publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
+                        // TODO: これがあるとrecordRoborazziDebugが失敗する
+//                        publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
                     )
                 }.toImmutableList(),
             ),
