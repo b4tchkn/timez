@@ -25,6 +25,9 @@ coil = "3.1.0"
 destinations = "1.11.9"
 turbine = "1.2.0"
 slackLintCompose = "1.4.2"
+composablePreviewScanner = "0.5.1"
+roborazzi = "1.43.1"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -61,6 +64,8 @@ destinations-core = { group = "io.github.raamcosta.compose-destinations", name =
 destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "destinations" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 slack-lint-compose = { group = "com.slack.lint.compose", name = "compose-lint-checks", version.ref = "slackLintCompose" }
+composable-preview-scanner = { module = "io.github.sergio-sastre.ComposablePreviewScanner:android", version.ref = "composablePreviewScanner" }
+roborazzi-compose-preview-scanner-support = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose-preview-scanner-support", version.ref = "roborazzi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -70,3 +75,4 @@ koltin-serilization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 secrets-grade = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradle" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
