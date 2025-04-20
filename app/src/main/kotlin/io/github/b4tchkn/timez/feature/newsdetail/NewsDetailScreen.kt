@@ -197,9 +197,11 @@ private fun NewsDetailScreenDefaultContent(
                                 width = 1.dp,
                                 color = TimezTheme.color.white,
                                 shape = RoundedCornerShape(4.dp),
-                            ).background(
+                            )
+                            .background(
                                 TimezTheme.color.white.copy(alpha = 0.2f),
-                            ).padding(
+                            )
+                            .padding(
                                 vertical = 4.dp,
                                 horizontal = 8.dp,
                             ),
@@ -324,7 +326,9 @@ private fun SlideAndFadeBox(
 private fun PreviewNewsDetailScreenDefaultContent(
     @PreviewParameter(NewsDetailScreenDefaultContentPreviewParameterProvider::class) param: Param,
 ) {
-    CompositionLocalProvider(LocalNowLocalDateTime provides FakeNowLocalDateTime) {
+    CompositionLocalProvider(
+        LocalNowLocalDateTime provides FakeNowLocalDateTime,
+    ) {
         MainSurface {
             NewsDetailScreenContent(
                 content = param.content,

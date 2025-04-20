@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +53,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
+import io.github.b4tchkn.timez.core.DefaultNowLocalDateTime
+import io.github.b4tchkn.timez.core.FakeNowLocalDateTime
 import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
 import io.github.b4tchkn.timez.core.RelativeTime
 import io.github.b4tchkn.timez.core.formatRelativeTimeFromNow
@@ -273,10 +276,7 @@ private fun TopArticle(
                         )
                     }
                     article.publishedAt?.let {
-                        val relativeText = when (
-                            val relativeTime =
-                                it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)
-                        ) {
+                        val relativeText = when (val relativeTime = it.formatRelativeTimeFromNow(LocalNowLocalDateTime.current.value)) {
                             is RelativeTime.Days -> "${relativeTime.days}${stringResource(R.string.days_ago)}"
                             is RelativeTime.Hours -> "${relativeTime.hours}${stringResource(R.string.hours_ago)}"
                         }
@@ -299,11 +299,15 @@ private fun TopArticle(
 private fun PreviewTopScreenDefaultContent(
     @PreviewParameter(TopScreenPreviewParameterProvider::class) param: Param,
 ) {
-    MainSurface {
-        TopScreenContent(
-            content = param.content,
-            onArticleClick = {},
-        )
+    CompositionLocalProvider(
+        LocalNowLocalDateTime provides FakeNowLocalDateTime,
+    ) {
+        MainSurface {
+            TopScreenContent(
+                content = param.content,
+                onArticleClick = {},
+            )
+        }
     }
 }
 
@@ -314,8 +318,7 @@ private class TopScreenPreviewParameterProvider : PreviewParameterProvider<Param
                 articles = List(10) {
                     Article.Default.copy(
                         title = "Title $it",
-                        // TODO: これがあるとrecordRoborazziDebugが失敗する
-//                        publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
+                        publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
                     )
                 }.toImmutableList(),
             ),
