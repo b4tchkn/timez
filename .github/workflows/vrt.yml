@@ -72,6 +72,11 @@ jobs:
     needs: [ lookup-cache, prepare-expected-cache, prepare-actual-cache ]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
@@ -82,9 +87,5 @@ jobs:
       - name: Run npm install
         run: npm i
 
-      - name: Run workaround for detached HEAD
-        run: git checkout ${GITHUB_REF#refs/heads/} || git checkout -b ${GITHUB_REF#refs/heads/} && git pull
-
       - name: run reg-suit
         run: npx reg-suit run
-          
