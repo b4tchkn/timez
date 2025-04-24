@@ -344,7 +344,7 @@ private class NewsDetailScreenDefaultContentPreviewParameterProvider : PreviewPa
                     title = "Title",
                     publishedAt = LocalDateTime(2000, 1, 1, 12, 0),
                     description = "This is content.".repeat(10),
-                    source = Source.Default.copy(name = "SourceName"),
+                    source = Source.Default.copy(name = "Source Name"),
                 ),
             ),
         ),
