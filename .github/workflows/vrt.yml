@@ -102,6 +102,7 @@ jobs:
           if [ -e .reg ]; then exit 1; fi
           mkdir .reg
           
+          # 画像が大きすぎるのでリサイズする
           mv app/build/outputs/roborazzi .reg/actual
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
@@ -159,10 +160,54 @@ jobs:
           -J .reg/report.json
           --ignoreChange
 
-      - if: ${{ !cancelled() }}
+      - name: Upload report
+        if: ${{ !cancelled() }}
         id: upload-artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: vrt-report
           path: .reg
           include-hidden-files: true
+
+      - name: Comment report on Pull Request
+        if: ${{ !cancelled() }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+
+            const log = fs.readFileSync('.easy-vrt/report.json', 'utf-8');
+            const json = JSON.parse(log);
+            console.log(json);
+
+            const stats = {
+              changed: json.failedItems.length.toString(),
+              newItems: json.newItems.length.toString(),
+              deleted: json.deletedItems.length.toString(),
+              passing: json.passedItems.length.toString()
+            };
+            
+            const allZero = Object.values(stats).every(v => v === '0');
+            
+            let markdown;
+            if (allZero) {
+              markdown = await core.summary
+                .addHeading("✨✨ That's perfect, there is no visual difference! ✨✨", 3)
+                .stringify();
+            } else {
+              markdown = await core.summary
+                .addHeading("Detected visual differences.", 3)
+                .addTable([
+                  ["🔴 Changed",  "⚪️ New",       "⚫️ Deleted",  "🔵 Passing"],
+                  [stats.changed, stats.newItems, stats.deleted, stats.passing]
+                ])
+                .addHeading("📊 Download Report", 3)
+                .stringify()
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: markdown
+            });
