@@ -18,23 +18,23 @@ module.exports = async ({ github, context, core }) => {
   let body;
   if (noDiff) {
     body = await core.summary
-        .addRaw("**✨✨ That's perfect, there is no visual difference! ✨✨**", true)
-        .addRaw(`🔵 Passing: ${stats.passing}`, true)
-        .addRaw(endLineMessage, true)
+        .addRaw("**✨✨ That's perfect, there is no visual difference! ✨✨**\n")
+        .addRaw(`🔵 Passing: ${stats.passing}\n`)
+        .addLink("View Report", "https://www.youtube.com/")
+        .addBreak()
+        .addRaw(endLineMessage)
         .stringify();
   } else {
     body = await core.summary
-        .addRaw("**Detected visual differences**", true)
+        .addRaw("**Detected visual differences**")
         .addTable([
           ["🔴 Changed",  "⚪️ New",       "⚫️ Deleted",  "🔵 Passing"],
           [stats.changed, stats.newItems, stats.deleted, stats.passing]
         ])
-        .addRaw("**📊 Download Report**", true)
         .addLink("View Report", "https://www.youtube.com/")
         .addBreak()
-        .addRaw(endLineMessage, true)
-        .stringify();
-  }
+        .addRaw(endLineMessage)
+        .stringify();  }
 
   const existingCommentId = await findExistingCommentId(github, context, endLineMessage);
 
