@@ -66,11 +66,13 @@ jobs:
         shell: bash
         run: |
           if [ -e .reg ]; then exit 1; fi
-          mkdir .reg && mv app/build/outputs/roborazzi .reg/expected
+          mkdir .reg
+          
+          mv app/build/outputs/roborazzi .reg/expected
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
         with:
-          path: ./reg/expected
+          path: .reg/expected
           key: reg-suit-cache-${{ needs.lookup-cache.outputs.expected-sha }}
 
   prepare-actual-cache:
@@ -79,13 +81,33 @@ jobs:
     timeout-minutes: 60
     needs: lookup-cache
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Cache actual
-        uses: ./.github/actions/cache-vrt
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref-hash: ${{ needs.lookup-cache.outputs.actual-sha }}
-          target-dir: actual
+          ref: ${{ inputs.ref-hash }}
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Copy Secrets
+        shell: bash
+        run: cp secrets.default.properties secrets.properties
+
+      - name: Take screenshots
+        shell: bash
+        run: ./gradlew recordRoborazziDebug
+
+      - name: Move screenshots files
+        shell: bash
+        run: |
+          if [ -e .reg ]; then exit 1; fi
+          mkdir .reg
+          
+          mv app/build/outputs/roborazzi .reg/actual
+
+      - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          path: .reg/actual
+          key: reg-suit-cache-${{ needs.lookup-cache.outputs.actual-sha }}
 
   vrt:
     if: ${{ !cancelled() && !failure() }}
