@@ -35,5 +35,5 @@ runs:
 
     - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
       with:
-        path: ${{ inputs.target-dir-path }}
+        path: .reg/${{ inputs.target-dir }}
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
