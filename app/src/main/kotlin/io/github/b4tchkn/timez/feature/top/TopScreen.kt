@@ -53,7 +53,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.b4tchkn.timez.R
-import io.github.b4tchkn.timez.core.DefaultNowLocalDateTime
 import io.github.b4tchkn.timez.core.FakeNowLocalDateTime
 import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
 import io.github.b4tchkn.timez.core.RelativeTime
@@ -72,7 +71,6 @@ import io.github.b4tchkn.timez.ui.theme.TimezTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDateTime
-import okhttp3.internal.immutableListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ComposeModifierMissing")
