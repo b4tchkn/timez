@@ -31,7 +31,7 @@ runs:
       shell: bash
       run: |
         if [ -e .reg ]; then exit 1; fi
-        mkdir .reg && mv ${{ app/build/outputs/roborazzi }} .reg/${{ inputs.target-dir }}
+        mkdir .reg && mv app/build/outputs/roborazzi .reg/${{ inputs.target-dir }}
 
     - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
       with:
