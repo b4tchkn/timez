@@ -1,0 +1,33 @@
+name: "Cache VRT"
+description: "Cache"
+
+inputs:
+  ref-hash:
+    description: "Target Commit Hash Ref"
+    required: true
+  target-dir-path:
+    description: "Target Directory Path"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        ref: ${{ inputs.ref-hash }}
+
+    - uses: ./.github/actions/setup-java
+
+    - name: Copy Secrets
+      shell: bash
+      run: cp secrets.default.properties secrets.properties
+
+    - name: Take screenshots
+      shell: bash
+      run: ./gradlew recordRoborazziDebug
+
+    - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+      with:
+        path: ${{ inputs.target-dir-path }}
+        key: reg-suit-cache-${{ inputs.expected-cache-key }}
