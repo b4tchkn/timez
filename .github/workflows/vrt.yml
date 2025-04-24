@@ -192,16 +192,18 @@ jobs:
             let markdown;
             if (noDiff) {
               markdown = await core.summary
-                .addHeading("✨✨ That's perfect, there is no visual difference! ✨✨", 3)
+                .addRaw('**✨✨ That's perfect, there is no visual difference! ✨✨**', true)
+                .addRaw(`🔵 Passing: ${stats.passing}`)
                 .stringify();
             } else {
               markdown = await core.summary
-                .addHeading("Detected visual differences.", 3)
+                .addRaw('**Detected visual differences**', true)
                 .addTable([
                   ["🔴 Changed",  "⚪️ New",       "⚫️ Deleted",  "🔵 Passing"],
                   [stats.changed, stats.newItems, stats.deleted, stats.passing]
                 ])
-                .addHeading("📊 Download Report", 3)
+                .addHeading('📊 Download Report', 3)
+                .addLink('View Report', 'https://www.youtube.com/')
                 .stringify()
             }
             
