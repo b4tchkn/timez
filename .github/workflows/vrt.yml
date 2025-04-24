@@ -95,6 +95,16 @@ jobs:
       - name: Run npm install
         run: npm i
 
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          key: reg-suit-cache-${{ needs.lookup-cache.outputs.actual-sha }}
+          path: .reg/actual
+
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          key: reg-suit-cache-${{ needs.lookup-cache.outputs.expected-sha }}
+          path: .reg/expected
+
       - name: run reg-suit
         run: >
           npx reg-cli
