@@ -187,10 +187,10 @@ jobs:
               passing: json.passedItems.length.toString()
             };
             
-            const allZero = Object.values(stats).every(v => v === '0');
+            const noDiff = (stats.changed === '0' && stats.newItems === '0' && stats.deleted === '0')
             
             let markdown;
-            if (allZero) {
+            if (noDiff) {
               markdown = await core.summary
                 .addHeading("✨✨ That's perfect, there is no visual difference! ✨✨", 3)
                 .stringify();
