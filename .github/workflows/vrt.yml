@@ -51,7 +51,7 @@ jobs:
         uses: ./github./actions/cache-vrt
         with:
           ref-hash: ${{ needs.lookup-cache.outputs.expected-sha }}
-          target-dir-path: .reg/expected
+          target-dir: expected
 
   prepare-actual-cache:
     if: ${{ !cancelled() && !failure() && needs.lookup-cache.outputs.actual-cache-hit == 'false' }}
@@ -63,7 +63,7 @@ jobs:
         uses: ./github/actions/cache-vrt
         with:
           ref-hash: ${{ needs.lookup-cache.outputs.actual-sha }}
-          target-dir-path: .reg/actual
+          target-dir: actual
 
   vrt:
     if: ${{ !cancelled() && !failure() }}
@@ -88,7 +88,14 @@ jobs:
         run: npm i
 
       - name: run reg-suit
-        run: npx reg-suit run
+        run: >
+          npx reg-cli
+          .reg/actual
+          .reg/expected
+          .reg/diff
+          -R .reg/report.html
+          -J .reg/report.json
+          --ignoreChange
 
       - if: ${{ !cancelled() }}
         id: upload-artifact
