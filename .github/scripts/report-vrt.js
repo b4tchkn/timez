@@ -1,4 +1,4 @@
-module.exports = async ({ github, context, core }) => {
+module.exports = async ({ github, context, core, url }) => {
   const fs = require('fs');
 
   const log = fs.readFileSync('.reg/report.json', 'utf-8');
@@ -20,10 +20,6 @@ module.exports = async ({ github, context, core }) => {
     body = await core.summary
         .addRaw("**✨✨ That's perfect, there is no visual difference! ✨✨**\n")
         .addRaw(`🔵 Passing: ${stats.passing}\n`)
-        .addLink("View Report", "https://www.youtube.com/")
-        .addBreak()
-        .addRaw(endLineMessage)
-        .stringify();
   } else {
     body = await core.summary
         .addRaw("**Detected visual differences**")
@@ -31,10 +27,13 @@ module.exports = async ({ github, context, core }) => {
           ["🔴 Changed",  "⚪️ New",       "⚫️ Deleted",  "🔵 Passing"],
           [stats.changed, stats.newItems, stats.deleted, stats.passing]
         ])
-        .addLink("View Report", "https://www.youtube.com/")
-        .addBreak()
-        .addRaw(endLineMessage)
-        .stringify();  }
+  }
+
+
+  body.addLink("View Report", url)
+    .addBreak()
+    .addRaw(endLineMessage)
+    .stringify();
 
   const existingCommentId = await findExistingCommentId(github, context, endLineMessage);
 
