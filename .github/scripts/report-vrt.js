@@ -1,4 +1,4 @@
-module.exports = async ({ github, context, core, url }) => {
+module.exports = async ({ github, context, core }) => {
   const fs = require('fs');
 
   const log = fs.readFileSync('.reg/report.json', 'utf-8');
@@ -30,7 +30,7 @@ module.exports = async ({ github, context, core, url }) => {
   }
 
 
-  body.addLink("View Report", url)
+  body.addLink("View Report", `https://b4tchkn.github.io/timez`)
     .addBreak()
     .addRaw(endLineMessage)
     .stringify();
