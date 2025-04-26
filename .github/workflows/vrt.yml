@@ -117,6 +117,8 @@ jobs:
     needs: [ lookup-cache, prepare-expected-cache, prepare-actual-cache ]
     permissions:
       contents: write
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout
