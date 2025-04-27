@@ -7,13 +7,5 @@
     "ximgdiff": {
       "invocationType": "client"
     }
-  },
-  "plugins": {
-    "reg-keygen-git-hash-plugin": true,
-    "reg-notify-github-plugin": {
-      "prComment": true,
-      "prCommentBehavior": "default",
-      "clientId": "szS0sDA2sbAw1y/JzE2t0jczsTQ0srQ01E8yKUnOyM4DAA=="
-    }
   }
 }
