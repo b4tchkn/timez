@@ -14,12 +14,15 @@ module.exports = async ({ github, context, core }) => {
 
   const noDiff = (stats.changed === "0" && stats.newItems === "0" && stats.deleted === "0");
   const endLineMessage = "This is result of vrt."
+  const headRef = context.payload.pull_request.head.ref;
+  const url = `https://b4tchkn.github.io/timez/${headRef}`;
 
   let body;
   if (noDiff) {
     body = await core.summary
         .addRaw("**✨✨ That's perfect, there is no visual difference! ✨✨**\n")
         .addRaw(`🔵 Passing: ${stats.passing}\n`)
+        .addLink("View Report", url)
         .addBreak()
         .addRaw(endLineMessage)
         .stringify();
@@ -30,7 +33,7 @@ module.exports = async ({ github, context, core }) => {
           ["🔴 Changed",  "⚪️ New",       "⚫️ Deleted",  "🔵 Passing"],
           [stats.changed, stats.newItems, stats.deleted, stats.passing]
         ])
-        .addLink("View Report", "https://b4tchkn.github.io/timez")
+        .addLink("View Report", url)
         .addBreak()
         .addRaw(endLineMessage)
         .stringify();
