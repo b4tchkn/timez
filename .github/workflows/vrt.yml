@@ -50,11 +50,37 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - uses: ./.github/actions/cache-vrt
         with:
-          ref-hash: ${{ needs.lookup-cache.outputs.expected-sha }}
-          target-dir: expected
+          ref: ${{ needs.lookup-cache.outputs.expected-sha }}
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Copy Secrets
+        shell: bash
+        run: cp secrets.default.properties secrets.properties
+
+      - name: Take screenshots
+        shell: bash
+        run: ./gradlew recordRoborazziDebug
+
+      - name: Format screenshots
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y imagemagick
+          pushd app/build/outputs/roborazzi && mogrify -resize 480x *.png && popd
+
+      - name: Move screenshots files
+        shell: bash
+        run: |
+          if [ -e .reg ]; then exit 1; fi
+          mkdir .reg
+          
+          mv app/build/outputs/roborazzi .reg/expected
+
+      - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          path: .reg/${{ inputs.target-dir }}
+          key: reg-suit-cache-${{ needs.lookup-cache.outputs.expected-sha }}
 
   prepare-actual-cache:
     if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' && !cancelled() && !failure() && needs.lookup-cache.outputs.actual-cache-hit != 'true' }}
@@ -144,7 +170,7 @@ jobs:
     if: ${{ github.event.pull_request && github.event.pull_request.state == 'closed' }}
     runs-on: ubuntu-latest
     permissions:
-      contents: write # gh-pages ブランチへの書き込み権限
+      contents: write
 
     steps:
       - name: Checkout gh-pages branch
