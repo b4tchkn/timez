@@ -62,6 +62,20 @@ jobs:
         shell: bash
         run: ./gradlew recordRoborazziDebug
 
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .tool-versions
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Run npm install
+        run: npm i
+
+      - name: Format screenshots
+        run: |
+          pushd app/build/outputs/roborazzi && npx magick mogrify -resize 480x *.png && popd
+
       - name: Move screenshots files
         shell: bash
         run: |
@@ -89,20 +103,21 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Copy Secrets
-        shell: bash
         run: cp secrets.default.properties secrets.properties
 
       - name: Take screenshots
-        shell: bash
         run: ./gradlew recordRoborazziDebug
 
+
+      - name: Format screenshots
+        run: |
+          sudo apt-get update && sudo apt-get install -y imagemagick
+          pushd app/build/outputs/roborazzi && mogrify -resize 480x *.png && popd
+
       - name: Move screenshots files
-        shell: bash
         run: |
           if [ -e .reg ]; then exit 1; fi
           mkdir .reg
-          
-          # TODO: 画像が大きすぎるのでリサイズする
           mv app/build/outputs/roborazzi .reg/actual
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
