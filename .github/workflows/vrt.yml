@@ -160,7 +160,7 @@ jobs:
           .reg/actual
           .reg/expected
           .reg/diff
-          -R .reg/report.html
+          -R .reg/index.html
           -J .reg/report.json
           --ignoreChange
 
