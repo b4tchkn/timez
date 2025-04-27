@@ -2,10 +2,11 @@ name: VRT
 
 on:
   pull_request:
-    types: [ opened, ready_for_review, synchronize ]
+    types: [ opened, ready_for_review, synchronize, closed ]
 
 jobs:
   lookup-cache:
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
@@ -42,7 +43,7 @@ jobs:
           lookup-only: true
 
   prepare-expected-cache:
-    if: ${{ !cancelled() && !failure() && needs.lookup-cache.outputs.expected-cache-hit != 'true' }}
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' && !cancelled() && !failure() && needs.lookup-cache.outputs.expected-cache-hit != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: lookup-cache
@@ -56,7 +57,7 @@ jobs:
           target-dir: expected
 
   prepare-actual-cache:
-    if: ${{ !cancelled() && !failure() && needs.lookup-cache.outputs.actual-cache-hit != 'true' }}
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' && !cancelled() && !failure() && needs.lookup-cache.outputs.actual-cache-hit != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: lookup-cache
@@ -71,7 +72,7 @@ jobs:
 
 
   vrt:
-    if: ${{ !cancelled() && !failure() }}
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' && !cancelled() && !failure() }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: [ lookup-cache, prepare-expected-cache, prepare-actual-cache ]
@@ -138,3 +139,34 @@ jobs:
           script: |
             const script = require('./.github/scripts/report-vrt.js')
             await script({ github, context, core })
+
+  remove_branch_dir:
+    if: ${{ github.event.pull_request && github.event.pull_request.state == 'closed' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # gh-pages ブランチへの書き込み権限
+
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+
+      - name: Remove PR branch directory
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          echo "Removing directory: $BRANCH_NAME"
+          if [ -d "$BRANCH_NAME" ]; then
+            rm -rf "$BRANCH_NAME"
+            echo "Removed directory: $BRANCH_NAME"
+          else
+            echo "Directory not found: $BRANCH_NAME"
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Remove directory for closed PR ${{ github.event.pull_request.number }} (${{ steps.get_branch_name.outputs.BRANCH_NAME }})"
+          git push origin gh-pages
