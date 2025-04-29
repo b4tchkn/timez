@@ -1,0 +1,198 @@
+name: VRT
+
+on:
+  pull_request:
+    types: [ opened, ready_for_review, synchronize, closed ]
+
+jobs:
+  lookup-cache:
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      actual-sha: ${{ steps.lookup-sha.outputs.actual-sha }}
+      actual-cache-hit: ${{ steps.lookup-actual-cache.outputs.cache-hit }}
+      expected-sha: ${{ steps.lookup-sha.outputs.expected-sha }}
+      expected-cache-hit: ${{ steps.lookup-expected-cache.outputs.cache-hit }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Lookup sha
+        id: lookup-sha
+        run: |
+          echo "actual-sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+          echo "expected-sha=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})" >> $GITHUB_OUTPUT
+
+      - name: Lookup actual cache
+        id: lookup-actual-cache
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          key: reg-suit-cache-${{ steps.lookup-sha.outputs.actual-sha }}
+          path: .reg/actual
+          lookup-only: true
+
+      - name: Lookup expected cache
+        id: lookup-expected-cache
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          key: reg-suit-cache-${{ steps.lookup-sha.outputs.expected-sha }}
+          path: .reg/expected
+          lookup-only: true
+
+  prepare-expected-cache:
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' && !cancelled() && !failure() && needs.lookup-cache.outputs.expected-cache-hit != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: lookup-cache
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ needs.lookup-cache.outputs.expected-sha }}
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Copy Secrets
+        shell: bash
+        run: cp secrets.default.properties secrets.properties
+
+      - name: Take screenshots
+        shell: bash
+        run: ./gradlew recordRoborazziDebug
+
+      - name: Format screenshots
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y imagemagick
+          pushd app/build/outputs/roborazzi && mogrify -resize 480x *.png && popd
+
+      - name: Move screenshots files
+        shell: bash
+        run: |
+          if [ -e .reg ]; then exit 1; fi
+          mkdir .reg
+          
+          mv app/build/outputs/roborazzi .reg/expected
+
+      - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          path: .reg/${{ inputs.target-dir }}
+          key: reg-suit-cache-${{ needs.lookup-cache.outputs.expected-sha }}
+
+  prepare-actual-cache:
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' && !cancelled() && !failure() && needs.lookup-cache.outputs.actual-cache-hit != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: lookup-cache
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: ./.github/actions/cache-vrt
+        with:
+          ref-hash: ${{ needs.lookup-cache.outputs.actual-sha }}
+          target-dir: actual
+
+
+  vrt:
+    if: ${{ github.event.pull_request && github.event.pull_request.state != 'closed' && !cancelled() && !failure() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [ lookup-cache, prepare-expected-cache, prepare-actual-cache ]
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Display cache keys
+        shell: bash
+        run: |
+          echo expected-cache-key ${{ needs.lookup-cache.outputs.expected-cache-hit }}
+          echo actual-cache-key ${{ needs.lookup-cache.outputs.actual-cache-hit }}
+          echo expected-sha ${{ needs.lookup-cache.outputs.expected-sha }}
+          echo actual-sha ${{ needs.lookup-cache.outputs.actual-sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .tool-versions
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Run npm install
+        run: npm i
+
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          key: reg-suit-cache-${{ needs.lookup-cache.outputs.actual-sha }}
+          path: .reg/actual
+
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+        with:
+          key: reg-suit-cache-${{ needs.lookup-cache.outputs.expected-sha }}
+          path: .reg/expected
+
+      - name: run reg-suit
+        run: >
+          npx reg-cli
+          .reg/actual
+          .reg/expected
+          .reg/diff
+          -R .reg/index.html
+          -J .reg/report.json
+          --ignoreChange
+
+      - name: Upload report
+        if: ${{ !cancelled() && !failure() }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .reg/
+          destination_dir: ${{ github.head_ref }}
+
+      - name: Comment report on Pull Request
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const script = require('./.github/scripts/report-vrt.js')
+            await script({ github, context, core })
+
+  remove_branch_dir:
+    if: ${{ github.event.pull_request && github.event.pull_request.state == 'closed' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+
+      - name: Remove PR branch directory
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          echo "Removing directory: $BRANCH_NAME"
+          if [ -d "$BRANCH_NAME" ]; then
+            rm -rf "$BRANCH_NAME"
+            echo "Removed directory: $BRANCH_NAME"
+          else
+            echo "Directory not found: $BRANCH_NAME"
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Remove directory for closed PR ${{ github.event.pull_request.number }} (${{ steps.get_branch_name.outputs.BRANCH_NAME }})"
+          git push origin gh-pages
