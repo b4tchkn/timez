@@ -59,6 +59,8 @@ jobs:
         shell: bash
         run: cp secrets.default.properties secrets.properties
 
+        
+
       - name: Take screenshots
         shell: bash
         run: ./gradlew recordRoborazziDebug
