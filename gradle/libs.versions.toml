@@ -25,7 +25,7 @@ coil = "3.1.0"
 destinations = "2.1.0"
 turbine = "1.2.0"
 slackLintCompose = "1.4.2"
-composablePreviewScanner = "0.5.1"
+composablePreviewScanner = "0.6.0"
 roborazzi = "1.43.1"
 
 
