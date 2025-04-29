@@ -1,0 +1,22 @@
+name: Cache Screenshots Main After PR Merge
+
+on:
+  pull_request:
+    types: [ closed ]
+    branches:
+      - main
+
+jobs:
+  store-screenshots-cache:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.base_ref == 'main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Cache
+        uses: ./.github/actions/cache-vrt
+        with:
+          ref-hash: ${{ github.sha }}
+          target-dir: expected
+
