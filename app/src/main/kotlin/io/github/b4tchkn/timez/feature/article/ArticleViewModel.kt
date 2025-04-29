@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
+import com.ramcosta.composedestinations.generated.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.b4tchkn.timez.feature.navArgs
 import io.github.b4tchkn.timez.ui.component.AppWebViewClient
 import io.github.b4tchkn.timez.ui.foundation.MoleculeViewModel
 import kotlinx.coroutines.flow.Flow

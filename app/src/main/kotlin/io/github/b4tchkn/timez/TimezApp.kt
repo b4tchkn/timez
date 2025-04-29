@@ -8,10 +8,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
 import io.github.b4tchkn.timez.core.DefaultNowLocalDateTime
 import io.github.b4tchkn.timez.core.LocalNowLocalDateTime
-import io.github.b4tchkn.timez.feature.NavGraphs
-import io.github.b4tchkn.timez.feature.destinations.TopScreenDestination
 import io.github.b4tchkn.timez.ui.theme.TimezTheme
 
 @SuppressLint("ComposeModifierMissing")
@@ -27,7 +26,6 @@ fun TimezApp() {
                 DestinationsNavHost(
                     navController = navController,
                     navGraph = NavGraphs.root,
-                    startRoute = TopScreenDestination,
                 )
             }
         }
