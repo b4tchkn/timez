@@ -37,3 +37,5 @@ google-services.json
 
 # Kotlin Gradle Plugin cache
 .kotlin
+.reg
+node_modules

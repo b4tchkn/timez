@@ -323,7 +323,9 @@ private fun SlideAndFadeBox(
 private fun PreviewNewsDetailScreenDefaultContent(
     @PreviewParameter(NewsDetailScreenDefaultContentPreviewParameterProvider::class) param: Param,
 ) {
-    CompositionLocalProvider(LocalNowLocalDateTime provides FakeNowLocalDateTime) {
+    CompositionLocalProvider(
+        LocalNowLocalDateTime provides FakeNowLocalDateTime,
+    ) {
         MainSurface {
             NewsDetailScreenContent(
                 content = param.content,

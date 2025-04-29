@@ -85,7 +85,7 @@ fun ArticleCard(
                             is RelativeTime.Hours -> "${relativeTime.hours}${stringResource(R.string.hours_ago)}"
                         }
                         Text(
-                            relativeText,
+                            text = relativeText,
                             style = TimezTheme.typography.h12,
                             color = TimezTheme.color.textColor,
                         )
@@ -105,7 +105,9 @@ fun ArticleCard(
 @Preview
 @Composable
 private fun PreviewArticleCard() {
-    CompositionLocalProvider(LocalNowLocalDateTime provides FakeNowLocalDateTime) {
+    CompositionLocalProvider(
+        LocalNowLocalDateTime provides FakeNowLocalDateTime,
+    ) {
         TimezTheme {
             ArticleCard(
                 article = Article.Default.copy(
