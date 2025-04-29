@@ -41,7 +41,7 @@ runs:
         
         mv app/build/outputs/roborazzi .reg/${{ inputs.target-dir }}
 
-    - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+    - uses: actions/cache/save@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
       with:
         path: .reg/${{ inputs.target-dir }}
         key: reg-suit-cache-${{ inputs.ref-hash }}
