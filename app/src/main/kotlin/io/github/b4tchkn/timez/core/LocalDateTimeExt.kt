@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 fun LocalDateTime.formatRelativeTimeFromNow(
     nowDateTime: LocalDateTime,
 ): RelativeTime {
