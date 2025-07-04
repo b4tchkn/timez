@@ -1,7 +1,7 @@
 package io.github.b4tchkn.timez.core
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -12,6 +12,7 @@ interface NowLocalDateTime {
 
 object DefaultNowLocalDateTime : NowLocalDateTime {
     override val value: LocalDateTime
+        @OptIn(kotlin.time.ExperimentalTime::class)
         get() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 }
 
