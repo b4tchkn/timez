@@ -103,6 +103,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.composable.preview.scanner)
     testImplementation(libs.roborazzi.compose.preview.scanner.support)
+    testImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
