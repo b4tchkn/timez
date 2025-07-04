@@ -12,6 +12,7 @@ interface NowLocalDateTime {
 
 object DefaultNowLocalDateTime : NowLocalDateTime {
     override val value: LocalDateTime
+        @OptIn(kotlin.time.ExperimentalTime::class)
         get() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 }
 
